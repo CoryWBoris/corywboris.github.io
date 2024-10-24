@@ -18,3 +18,15 @@ plugins:
 # include pages
 include:
   - _pages
+# make the image a background image, including the image name for reference
+# image:
+#   background: CoryPortrait.JPG
+#   background_size: cover
+#   background_position: center
+#   background_darken: 0.6
+
+#   background_position: center
+
+#   background_size: cover
+#   background_position: center
+#   background_darken: 0.6
