@@ -3,6 +3,7 @@
 @import "minima";
 
 body {
+    padding: 0;
     height: 100%;
     margin: 0;
     display: flex;
@@ -29,4 +30,11 @@ body {
     width: 100%;
     padding: 20px;
     text-align: center;
+}
+
+.site-nav {
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
+    // make text actually in the center both vertically and horizontally without changing padding
 }
