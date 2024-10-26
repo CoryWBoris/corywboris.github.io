@@ -28,6 +28,34 @@
 
     }
 }
+
+.horizontal-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0; // Ensure no margin
+  align-items: center; // Align items vertically in the center
+}
+.social-media-list {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Adjust the gap between icons as needed */
+  list-style: none; /* Remove default list styling */
+  padding: 0; /* Remove default padding */
+  margin: 20px 0; /* Add some margin for spacing */
+}
+
+.social-media-list li {
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+}
+.horizontal-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  align-items: center; /* Align items vertically in the center */
+  justify-content: left;
+}
 @media (min-width: 601px) {
   .content {
       // position: absolute;
@@ -39,19 +67,6 @@
       text-align: center;
   }
 
-  .social-media-list {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Adjust the gap between icons as needed */
-    list-style: none; /* Remove default list styling */
-    padding: 0; /* Remove default padding */
-    margin: 20px 0; /* Add some margin for spacing */
-  }
-
-  .social-media-list li {
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-  }
 
   .social-media-list a {
     display: flex;
@@ -81,13 +96,6 @@
 
   .social-media-list:hover .svg-icon:hover {
     filter: none; /* Remove blur from the hovered icon */
-  }
-  .horizontal-list {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    align-items: center; /* Align items vertically in the center */
-    justify-content: left;
   }
 
   .horizontal-list li {
