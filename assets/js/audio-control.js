@@ -36,14 +36,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            // Decode it
-            buffer = await audioCtx.decodeAudioData(await response.arrayBuffer());
+            const arrayBuffer = await response.arrayBuffer();
+            buffer = await audioCtx.decodeAudioData(arrayBuffer);
+            console.log("Audio loaded successfully");
         } catch (err) {
-            console.error(`Unable to fetch the audio file. Error: ${err.message}`);
+            console.error(`Unable to fetch or decode the audio file. Error: ${err.message}`);
+            // Handle the error (e.g., show a message to the user)
         }
     }
 
     playPauseButton.addEventListener('click', async function() {
+            // Ensure audio context is created and resumed
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+        }
         if (!buffer) {
             await loadAudio();
         }
