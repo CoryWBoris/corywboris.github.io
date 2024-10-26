@@ -21,168 +21,169 @@ body {
 
     }
 }
+@media (min-width: 601px) {
+  .content {
+      // position: absolute;
+      bottom: 0;
+      // background: rgba(0, 0, 0, 0.5);
+      // color: #f1f1f1;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+  }
 
-.content {
-    // position: absolute;
-    bottom: 0;
-    // background: rgba(0, 0, 0, 0.5);
-    // color: #f1f1f1;
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-}
-
-.social-media-list {
-  display: flex;
-  justify-content: center;
-  gap: 20px; /* Adjust the gap between icons as needed */
-  list-style: none; /* Remove default list styling */
-  padding: 0; /* Remove default padding */
-  margin: 20px 0; /* Add some margin for spacing */
-}
-
-.social-media-list li {
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
-}
-
-.social-media-list a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0; /* Remove default padding */
-  margin: 0; /* Remove default margin */
-}
-
-.social-media-list .svg-icon {
-  width: 50px; /* Adjust the size of the icons as needed */
-  height: 50px;
-  transition: filter 0.3s ease, transform 0.3s ease;
-}
-
-.social-media-list .svg-icon:hover {
-  transform: scale(1.2); /* Enlarge the hovered icon */
-}
-
-// .social-media-list .svg-icon:not(:hover) {
-//   filter: blur(2px); /* Apply blur to non-hovered icons */
-// }
-
-.social-media-list:hover .svg-icon {
-  filter: blur(2px); /* Apply blur to all icons when the list is hovered */
-}
-
-.social-media-list:hover .svg-icon:hover {
-  filter: none; /* Remove blur from the hovered icon */
-}
-.horizontal-list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  align-items: center; /* Align items vertically in the center */
-  justify-content: left;
-}
-
-.horizontal-list li {
-  margin-right: 10px;
-}
-
-.horizontal-list .svg-icon {
-  vertical-align: middle; /* Ensure SVG icons are vertically aligned */
-}
-.site-footer {
-  border-top: 1px solid #e8e8e8;
-  padding: 10px 0; // Reduce padding
-  clear: both;
-}
-
-.footer-heading {
-  font-size: 18px;
-  margin-bottom: 5px; // Reduce margin
-  margin-left: 14px; // Add margin to the left
-}
-
-.contact-list,
-.social-media-list {
-  list-style: none;
-  margin-left: 0;
-  padding: 0; // Ensure no padding
-}
-
-.footer-col-wrapper {
-  font-size: 15px;
-  color: #828282;
-  margin-left: -15px;
-}
-
-.footer-col {
-  float: left;
-  margin-bottom: 5px; // Reduce margin
-  padding-left: 15px;
-}
-
-
-.horizontal-list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0; // Ensure no margin
-  align-items: center; // Align items vertically in the center
-}
-
-// .horizontal-list li {
-//   margin-right: 10px;
-// }
-
-.horizontal-list .svg-icon {
-  vertical-align: middle; // Ensure SVG icons are vertically aligned
-}
-
-.social-media-list.horizontal-list {
+  .social-media-list {
     display: flex;
-    justify-content: flex-start; // Align to the left
-    align-items: center;
-    gap: 0; // Remove gap between items
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap between icons as needed */
+    list-style: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+    margin: 20px 0; /* Add some margin for spacing */
+  }
 
-    li {
+  .social-media-list li {
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+  }
+
+  .social-media-list a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+  }
+
+  .social-media-list .svg-icon {
+    width: 50px; /* Adjust the size of the icons as needed */
+    height: 50px;
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+
+  .social-media-list .svg-icon:hover {
+    transform: scale(1.2); /* Enlarge the hovered icon */
+  }
+
+  // .social-media-list .svg-icon:not(:hover) {
+  //   filter: blur(2px); /* Apply blur to non-hovered icons */
+  // }
+
+  .social-media-list:hover .svg-icon {
+    filter: blur(2px); /* Apply blur to all icons when the list is hovered */
+  }
+
+  .social-media-list:hover .svg-icon:hover {
+    filter: none; /* Remove blur from the hovered icon */
+  }
+  .horizontal-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    align-items: center; /* Align items vertically in the center */
+    justify-content: left;
+  }
+
+  .horizontal-list li {
+    margin-right: 10px;
+  }
+
+  .horizontal-list .svg-icon {
+    vertical-align: middle; /* Ensure SVG icons are vertically aligned */
+  }
+  .site-footer {
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 0; // Reduce padding
+    clear: both;
+  }
+
+  .footer-heading {
+    font-size: 18px;
+    margin-bottom: 5px; // Reduce margin
+    margin-left: 14px; // Add margin to the left
+  }
+
+  .contact-list,
+  .social-media-list {
+    list-style: none;
+    margin-left: 0;
+    padding: 0; // Ensure no padding
+  }
+
+  .footer-col-wrapper {
+    font-size: 15px;
+    color: #828282;
+    margin-left: -15px;
+  }
+
+  .footer-col {
+    float: left;
+    margin-bottom: 5px; // Reduce margin
+    padding-left: 15px;
+  }
+
+
+  .horizontal-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0; // Ensure no margin
+    align-items: center; // Align items vertically in the center
+  }
+
+  // .horizontal-list li {
+  //   margin-right: 10px;
+  // }
+
+  .horizontal-list .svg-icon {
+    vertical-align: middle; // Ensure SVG icons are vertically aligned
+  }
+
+  .social-media-list.horizontal-list {
+      display: flex;
+      justify-content: flex-start; // Align to the left
+      align-items: center;
+      gap: 0; // Remove gap between items
       margin: 0;
       padding: 0;
-      line-height: 1; // Prevent line-height inheritance
+      list-style: none;
 
-      // Remove any spacing between list items
-      & + li {
-        padding-top: 0;
+      li {
+        margin: 0;
+        padding: 0;
+        line-height: 1; // Prevent line-height inheritance
+
+        // Remove any spacing between list items
+        & + li {
+          padding-top: 0;
+        }
+      }
+
+      a {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+      }
+
+      .svg-icon {
+        width: 50px;
+        height: 50px;
+        padding: 15px; // Remove padding from icons
+        margin: 0;
+        transition: filter 0.3s ease, transform 0.3s ease;
       }
     }
 
-    a {
-      display: flex;
-      align-items: center;
-      padding: 0;
-      margin: 0;
-    }
-
-    .svg-icon {
-      width: 50px;
-      height: 50px;
-      padding: 15px; // Remove padding from icons
-      margin: 0;
-      transition: filter 0.3s ease, transform 0.3s ease;
-    }
+  // Update footer column styles
+  .footer-col-2 {
+  padding: 0; // Remove padding from footer column
   }
 
-// Update footer column styles
-.footer-col-2 {
-padding: 0; // Remove padding from footer column
-}
+  .footer-col-wrapper {
+  margin-left: 0; // Remove margin that might cause misalignment
+  }
 
-.footer-col-wrapper {
-margin-left: 0; // Remove margin that might cause misalignment
-}
-
-.footer-col {
-    margin-right: 173px;
+  .footer-col {
+      margin-right: 173px;
+  }
 }
