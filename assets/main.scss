@@ -18,12 +18,12 @@
 @media (max-width: 600px) {
     body {
       padding: 0;
-      height: 100%;
+      height: 100vh;
       margin: 0;
       display: flex;
       flex-direction: column;
       background: linear-gradient(to top, rgba(255, 255, 255, 0.794), rgba(255, 255, 255, 1)),
-                  url("{{ site.baseurl }}/assets/images/CoryPortrait_mobile.JPG") center/100% 100% no-repeat;
+                  url("{{ site.baseurl }}/assets/images/CoryPortrait_mobile.JPG") center/cover no-repeat fixed;
                   // change just the width of the photo
 
     }
