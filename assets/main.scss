@@ -29,6 +29,21 @@
     }
 }
 
+/* Hide mobile footer by default */
+.mobile-footer {
+  display: none;
+}
+
+/* Show mobile footer and hide desktop footer on small screens */
+@media (max-width: 768px) {
+  .desktop-footer {
+    display: none;
+  }
+  .mobile-footer {
+    display: block;
+  }
+}
+
 .horizontal-list {
   display: flex;
   list-style: none;
@@ -200,5 +215,14 @@
 
   .footer-col {
       margin-right: 173px;
+  }
+}
+@media (max-width: 600px) {
+  .site-footer.h-card {
+    padding: 0;
+  }
+
+  .social-media-list.horizontal-list {
+    margin: 0;
   }
 }
