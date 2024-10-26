@@ -23,7 +23,7 @@
       display: flex;
       flex-direction: column;
       background: linear-gradient(to top, rgba(255, 255, 255, 0.794), rgba(255, 255, 255, 1)),
-                  url("{{ site.baseurl }}/assets/images/CoryPortrait_mobile.jpg") center/cover no-repeat fixed;
+                  url("{{ site.baseurl }}/assets/images/CoryPortrait_mobile.jpg") center/100% 100% no-repeat;
                   // change just the width of the photo
 
     }
