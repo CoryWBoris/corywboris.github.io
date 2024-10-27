@@ -9,7 +9,7 @@ body {
 .bg {
     position: relative;
     z-index: 1;
-    
+
     .night-background {
         position: fixed;
         top: 0;
@@ -20,7 +20,7 @@ body {
         transition: opacity 0.3s ease;
         pointer-events: none;
     }
-    
+
     .stars {
         position: absolute;
         top: 0;
@@ -29,7 +29,7 @@ body {
         height: 100%;
         background: #000 url("/assets/images/stars.png") repeat top center;
     }
-    
+
     .twinkling {
         position: absolute;
         top: 0;
@@ -44,8 +44,8 @@ body {
 @media (min-width: 601px) {
     body {
         background: linear-gradient(
-            to top, 
-            rgba(255, 255, 255, var(--day-opacity, 1)), 
+            to top,
+            rgba(255, 255, 255, var(--day-opacity, 1)),
             rgba(255, 255, 255, calc(var(--day-opacity, 1) * 0.74))
         ),
         url("/assets/images/CoryPortrait.JPG") center/cover no-repeat;
@@ -420,10 +420,16 @@ body {
 }
 
 /* Ensure the car is draggable */
+@media (min-width: 601px) {
 .car, .red-car {
     pointer-events: auto;
 }
-
+}
+@media (max-width: 600px) {
+  .car, .red-car {
+    pointer-events: none;
+}
+}
 /* Make sure SVG doesn't interfere with dragging */
 .car svg, .red-car svg {
     fill-opacity: 1;
@@ -436,7 +442,7 @@ body {
 }
 
 /* Target both the container and SVG */
-.car, .red-car, 
+.car, .red-car,
 .car svg, .red-car svg {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
