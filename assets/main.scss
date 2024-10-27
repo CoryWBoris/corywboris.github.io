@@ -502,3 +502,7 @@ body {
     /* Ensure clean edges */
     shape-rendering: optimizeSpeed;
 }
+#volumeSlider::-webkit-slider-thumb,
+#speedSlider::-webkit-slider-thumb {
+  opacity: 0;
+}
