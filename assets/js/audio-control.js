@@ -116,8 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prevent focus
         e.target.blur();
 
-        console.log('Button clicked');
-
         if (!audioUnlocked) {
             try {
                 await unlockAudio.play();
@@ -214,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     speedSlider.addEventListener('input', function(e) {
         // Add this line first - should show in console
-        console.log('Slider value:', e.target.value);
          // Store the value
         const value = e.target.value;
 
