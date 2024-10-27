@@ -518,3 +518,144 @@ body {
 .page-content {
   padding: 3px 0px 0px 0px;
 }
+@media (max-width: 600px) {
+site-footer.h-card {
+  padding: 0;
+}
+
+/* Footer styles */
+.site-footer {
+  /* Use a fixed height instead of relative height */
+  height: 60px; /* Adjust this value to match your header height */
+  
+  /* Ensure the footer stays at the bottom */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  /* Prevent content overflow */
+  overflow: hidden;
+  
+
+  
+  /* Ensure footer stays above content */
+  z-index: 100;
+}
+
+
+
+/* For elements inside the footer */
+.site-footer .footer-content {
+  /* Keep content centered within the footer */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  
+  /* Prevent content from expanding footer */
+  max-height: 100%;
+}
+
+
+
+/* Footer styles */
+.site-footer {
+  /* Use a fixed height instead of relative height */
+  height: 60px; /* Adjust this value to match your header height */
+  
+  /* Ensure the footer stays at the bottom */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  /* Prevent content overflow */
+  overflow: hidden;
+
+  
+  /* Ensure footer stays above content */
+  z-index: 100;
+
+  /* Center all content vertically */
+  display: flex;
+  align-items: center;
+}
+
+
+
+/* For the container that holds your footer items */
+.site-footer .footer-content {
+  /* Take up full width of footer */
+  width: 100%;
+  
+  /* Center items horizontally and vertically */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  
+  /* Prevent content from expanding footer */
+  height: 100%;
+}
+
+.site-footer {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Container for footer content
+  .footer-col-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  // Column styles
+  .footer-col {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 15px;
+  }
+
+  // Social media list
+  .social-media-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  // Horizontal list
+  .horizontal-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+// Media query for mobile
+
+  .site-footer {
+    .footer-col-wrapper {
+      flex-direction: column;
+    }
+
+    .footer-col {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
