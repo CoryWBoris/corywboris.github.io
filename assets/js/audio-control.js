@@ -1,4 +1,4 @@
-let audioCtx, gainNode, source, buffer, startTime, pauseTime, isPlaying = false;
+let audioCtx, gainNode, convolver, dryGain, wetGain,source, buffer, startTime, pauseTime, isPlaying = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Add this at the start
@@ -13,20 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Call it multiple times to ensure it works
     scrollPastHeader();
 
-    // Also call it after a tiny delay to ensure everything is loaded
-    setTimeout(scrollPastHeader, 100);
-
     const playPauseButton = document.getElementById('playPauseButton');
     const stopButton = document.getElementById('stopButton');
     const volumeSlider = document.getElementById('volumeSlider');
     const speedSlider = document.getElementById('speedSlider');
+    const reverbSlider = document.getElementById('reverbSlider');
     const volumeLabel = document.getElementById('volumeLabel');
     const speedLabel = document.getElementById('speedLabel');
+    const reverbLabel = document.getElementById('reverbLabel');
     const car = document.querySelector('.car');
     const redCar = document.querySelector('.red-car');
+    const greenCar = document.querySelector('.green-car');
+
     let isDraggingVolume = false;
     let isDraggingSpeed = false;
-    // Initialize volume to 75%
+    let isDraggingReverb = false;
     const initialVolume = 75;
     volumeSlider.value = initialVolume;
     // volumeLabel.textContent = `Volume: ${initialVolume}%`;
@@ -34,6 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize speed to 1 (normal speed) and set the range to allow for variations
     const initialSpeed = 100;
     const speedRange = { min: 50, max: 150 };
+
+    const initialReverb = 0;
+    const reverbRange = { min: 0, max: 100 };
+    reverbSlider.min = reverbRange.min;
+    reverbSlider.max = reverbRange.max;
+    reverbSlider.value = initialReverb;
+    // reverbLabel.textContent = `Reverb: ${initialReverb}%`;
+
     speedSlider.min = speedRange.min;
     speedSlider.max = speedRange.max;
     speedSlider.value = initialSpeed;
@@ -43,6 +52,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Audio context and buffer setup
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = audioCtx.createGain();
+    convolver = audioCtx.createConvolver();
+
+    // Add this after creating the convolver
+    async function createImpulseResponse() {
+        const length = audioCtx.sampleRate * 2.0; // 2 second impulse
+        const impulseBuffer = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+        
+        for (let channel = 0; channel < 2; channel++) {
+            const channelData = impulseBuffer.getChannelData(channel);
+            for (let i = 0; i < length; i++) {
+                channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+            }
+        }
+        
+        convolver.buffer = impulseBuffer;
+    }
+    
     const audioPath = "/assets/audio/sunsetBoulevard.mp3";
 
     async function loadAudio() {
@@ -92,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     stopButton.disabled = true;
     volumeSlider.disabled = true;
     speedSlider.disabled = true;
-
+    reverbSlider.disabled = true;
     // Block all audio functionality until properly unlocked
     function handleSliderInteraction(e) {
         if (!audioUnlocked) {
@@ -108,6 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
     volumeSlider.addEventListener('touchstart', handleSliderInteraction, true);
     speedSlider.addEventListener('mousedown', handleSliderInteraction, true);
     speedSlider.addEventListener('touchstart', handleSliderInteraction, true);
+    reverbSlider.addEventListener('mousedown', handleSliderInteraction, true);
+    reverbSlider.addEventListener('touchstart', handleSliderInteraction, true);
 
     // Prevent scroll bounce on button clicks
     playPauseButton.addEventListener('click', async function(e) {
@@ -126,6 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Only initialize Web Audio API after proper unlock
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 gainNode = audioCtx.createGain();
+                convolver = audioCtx.createConvolver();
+                await createImpulseResponse();
                 await loadAudio();
 
                 // Enable all controls only after proper unlock
@@ -133,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 stopButton.disabled = false;
                 volumeSlider.disabled = false;
                 speedSlider.disabled = false;
+                reverbSlider.disabled = false;
                 return;
             } catch (err) {
                 console.error('Audio unlock failed:', err);
@@ -156,7 +187,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!source) {
                 source = audioCtx.createBufferSource();
                 source.buffer = buffer;
-                source.connect(gainNode).connect(audioCtx.destination);
+
+                // create a dry/wet mix
+                dryGain = audioCtx.createGain();
+                wetGain = audioCtx.createGain();
+
+                // Connect source to both paths
+                source.connect(dryGain);
+                source.connect(convolver);
+                convolver.connect(wetGain);
+                
+                // Connect both paths to main gain
+                dryGain.connect(gainNode);
+                wetGain.connect(gainNode);
+                
+                gainNode.connect(audioCtx.destination);
+                
+                // Set initial mix
+                dryGain.gain.value = 1 - (reverbSlider.value / 100);
+                wetGain.gain.value = reverbSlider.value / 100;
                 source.loop = true;
                 source.playbackRate.value = speedSlider.value / 100;
                 gainNode.gain.value = volumeSlider.value / 100;
@@ -218,6 +267,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // speedLabel.textContent = `Varispeed: ${(speedSlider.value / 100).toFixed(1)}`;
     });
 
+    reverbSlider.addEventListener('input', function() {
+        updateCarPosition(reverbSlider.value, greenCar, reverbRange.min, reverbRange.max);
+        
+        if (source && dryGain && wetGain) {  // Reference the gain nodes directly
+            const wetAmount = reverbSlider.value / 100;
+            wetGain.gain.value = wetAmount;
+            dryGain.gain.value = 1 - wetAmount;
+        }
+    });
+
 
     car.addEventListener('mousedown', function(event) {
         isDraggingVolume = true;
@@ -233,6 +292,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('selectstart', preventSelection); // Prevent text selection
     });
 
+    greenCar.addEventListener('mousedown', function(event) {
+        isDraggingReverb = true;
+        document.addEventListener('mousemove', onMouseMoveReverb);
+        document.addEventListener('mouseup', onMouseUpReverb);
+        document.addEventListener('selectstart', preventSelection); // Prevent text selection
+    });
+
     // Prevent slider click from moving the car
     volumeSlider.addEventListener('mousedown', function(event) {
         if (event.target !== car) {
@@ -245,7 +311,13 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
         }
     });
+    reverbSlider.addEventListener('mousedown', function(event) {
+        if (event.target !== greenCar) {
+            event.preventDefault();
+        }
+    });
 
+    
     function onMouseMoveVolume(event) {
         if (!isDraggingVolume) return;
         const sliderRect = volumeSlider.getBoundingClientRect();
@@ -276,6 +348,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // speedLabel.textContent = `Varispeed: ${(newValue / 100).toFixed(1)}`;
     }
 
+    function onMouseMoveReverb(event) {
+        if (!isDraggingReverb) return;
+        const sliderRect = reverbSlider.getBoundingClientRect();
+        let newLeft = event.clientX - sliderRect.left;
+        if (newLeft < 0) newLeft = 0;
+        if (newLeft > sliderRect.width) newLeft = sliderRect.width;
+        const newValue = (newLeft / sliderRect.width) * 100;
+        reverbSlider.value = newValue;
+        updateCarPosition(newValue, greenCar, reverbRange.min, reverbRange.max);
+        if (dryGain && wetGain) {  // Changed from convolver
+            const wetAmount = newValue / 100;
+            wetGain.gain.value = wetAmount;
+            dryGain.gain.value = 1 - wetAmount;
+        }
+        // reverbLabel.textContent = `Reverb: ${newValue.toFixed(0)}%`;
+    }
+
     function onMouseUpVolume() {
         isDraggingVolume = false;
         document.removeEventListener('mousemove', onMouseMoveVolume);
@@ -290,9 +379,23 @@ document.addEventListener('DOMContentLoaded', function() {
         document.removeEventListener('selectstart', preventSelection); // Re-enable text selection
     }
 
+    function onMouseUpReverb() {
+        isDraggingReverb = false;
+        document.removeEventListener('mousemove', onMouseMoveReverb);
+        document.removeEventListener('mouseup', onMouseUpReverb);
+        document.removeEventListener('selectstart', preventSelection); // Re-enable text selection
+    }
+
     function updateCarPosition(value, carElement, min, max) {
         const sliderWidth = carElement.parentElement.querySelector('input[type="range"]').offsetWidth;
-        const carPosition = ((value - min) / (max - min)) * sliderWidth;
+        const carWidth = carElement.offsetWidth;  // Get the car's width
+        
+        // Adjust the available travel distance by subtracting the car width
+        const adjustedWidth = sliderWidth - carWidth;
+        
+        // Calculate position as a percentage of the adjusted width
+        const carPosition = ((value - min) / (max - min)) * adjustedWidth;
+        
         carElement.style.left = `${carPosition}px`;
     }
 
@@ -303,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize car positions
     updateCarPosition(initialVolume, car, 0, 100);
     updateCarPosition(initialSpeed, redCar, speedRange.min, speedRange.max);
-
+    updateCarPosition(initialReverb, greenCar, reverbRange.min, reverbRange.max);
     // Add this either inline or in your stylesheet
     playPauseButton.style.touchAction = 'none';
     stopButton.style.touchAction = 'none';
@@ -331,7 +434,52 @@ document.addEventListener('DOMContentLoaded', function() {
             gainNode.gain.value = percentage / 100;
         }
     }
+    function handleTouchMoveSpeed(event) {
+        if (!isDraggingSpeed) return;
+        event.preventDefault();
 
-    // Do the same for speed slider/red car
+        const touch = event.touches[0];
+        const sliderRect = speedSlider.getBoundingClientRect();
+        const carRect = redCar.getBoundingClientRect();
+
+        let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
+        newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
+
+        // Update car position
+        redCar.style.left = `${newLeft}px`;
+
+        // Update slider value
+        const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
+        speedSlider.value = percentage;
+
+        if (source) {
+            source.playbackRate.value = percentage / 100;
+        }
+    }
+
+    function handleTouchMoveReverb(event) {
+        if (!isDraggingReverb) return;
+        event.preventDefault();
+
+        const touch = event.touches[0];
+        const sliderRect = reverbSlider.getBoundingClientRect();
+        const carRect = greenCar.getBoundingClientRect();
+
+        let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
+        newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
+
+        // Update car position
+        greenCar.style.left = `${newLeft}px`;
+
+        // Update slider value
+        const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
+        reverbSlider.value = percentage;
+
+        if (dryGain && wetGain) {  // Changed from convolver
+            const wetAmount = percentage / 100;
+            wetGain.gain.value = wetAmount;
+            dryGain.gain.value = 1 - wetAmount;
+        }
+    }
 });
 
