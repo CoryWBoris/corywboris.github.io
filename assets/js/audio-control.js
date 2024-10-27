@@ -214,8 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add this line first - should show in console
          // Store the value
         const value = e.target.value;
-
-        alert(`Slider value: ${value}`);
         
         // Your existing working code for the car
         redCar.style.left = `${value}%`;
