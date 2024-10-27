@@ -211,17 +211,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     speedSlider.addEventListener('input', function(e) {
-        // Add this line first - should show in console
-         // Store the value
-        const value = e.target.value;
-        
-        // Your existing working code for the car
-        redCar.style.left = `${value}%`;
-        
-        // Your existing audio code
-        if (audioElement) {
-            audioElement.playbackRate = e.target.value / 100;
+        updateCarPosition(speedSlider.value, redCar, speedRange.min, speedRange.max);
+        if (source) {
+            source.playbackRate.value = speedSlider.value / 100;
         }
+        // speedLabel.textContent = `Varispeed: ${(speedSlider.value / 100).toFixed(1)}`;
     });
 
 
