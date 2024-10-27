@@ -1,6 +1,21 @@
 let audioCtx, gainNode, source, buffer, startTime, pauseTime, isPlaying = false;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add this at the start
+    function scrollPastHeader() {
+        const header = document.querySelector('header');
+        if (header && 'ontouchstart' in window) {
+            // Force scroll past header immediately
+            window.scrollTo(0, header.offsetHeight);
+        }
+    }
+
+    // Call it multiple times to ensure it works
+    scrollPastHeader();
+
+    // Also call it after a tiny delay to ensure everything is loaded
+    setTimeout(scrollPastHeader, 100);
+
     const playPauseButton = document.getElementById('playPauseButton');
     const stopButton = document.getElementById('stopButton');
     const volumeSlider = document.getElementById('volumeSlider');
@@ -36,17 +51,98 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const arrayBuffer = await response.arrayBuffer();
-            buffer = await audioCtx.decodeAudioData(arrayBuffer);
-            console.log("Audio loaded successfully");
+            // Decode it
+            buffer = await audioCtx.decodeAudioData(await response.arrayBuffer());
         } catch (err) {
-            console.error(`Unable to fetch or decode the audio file. Error: ${err.message}`);
-            // Handle the error (e.g., show a message to the user)
+            console.error(`Unable to fetch the audio file. Error: ${err.message}`);
         }
     }
 
-    playPauseButton.addEventListener('click', async function() {
-            // Ensure audio context is created and resumed
+    // Clear any existing audio elements and cache
+    function clearAudioCache() {
+        const existingAudio = document.getElementsByTagName('audio');
+        for (let audio of existingAudio) {
+            audio.pause();
+            audio.src = '';
+            audio.remove();
+        }
+
+        if (audioCtx) {
+            audioCtx.close();
+            audioCtx = null;
+        }
+
+        if (source) {
+            source.stop();
+            source = null;
+        }
+    }
+
+    // Clear on page load
+    clearAudioCache();
+
+    // Also clear on beforeunload
+    window.addEventListener('beforeunload', clearAudioCache);
+
+    const unlockAudio = new Audio('/assets/audio/Please_Ignore_This_Audio_As_I_Needed_It_For_WebAudio_Compatibility.mp3');
+    let audioUnlocked = false;
+
+    // Disable all controls until audio is enabled
+    playPauseButton.textContent = 'Enable Audio';
+    stopButton.disabled = true;
+    volumeSlider.disabled = true;
+    speedSlider.disabled = true;
+
+    // Block all audio functionality until properly unlocked
+    function handleSliderInteraction(e) {
+        if (!audioUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Please enable audio first');
+            return false;
+        }
+    }
+
+    // Add blockers to sliders
+    volumeSlider.addEventListener('mousedown', handleSliderInteraction, true);
+    volumeSlider.addEventListener('touchstart', handleSliderInteraction, true);
+    speedSlider.addEventListener('mousedown', handleSliderInteraction, true);
+    speedSlider.addEventListener('touchstart', handleSliderInteraction, true);
+
+    // Prevent scroll bounce on button clicks
+    playPauseButton.addEventListener('click', async function(e) {
+        // Prevent default button behavior
+        e.preventDefault();
+        // Prevent focus
+        e.target.blur();
+
+        console.log('Button clicked');
+
+        if (!audioUnlocked) {
+            try {
+                await unlockAudio.play();
+                unlockAudio.pause();
+                unlockAudio.currentTime = 0;
+                audioUnlocked = true;
+
+                // Only initialize Web Audio API after proper unlock
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioCtx.createGain();
+                await loadAudio();
+
+                // Enable all controls only after proper unlock
+                playPauseButton.textContent = 'Play';
+                stopButton.disabled = false;
+                volumeSlider.disabled = false;
+                speedSlider.disabled = false;
+                return;
+            } catch (err) {
+                console.error('Audio unlock failed:', err);
+                return;
+            }
+        }
+
+        // Ensure audio context is created and resumed
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -66,13 +162,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 source.loop = true;
                 source.playbackRate.value = speedSlider.value / 100;
                 gainNode.gain.value = volumeSlider.value / 100;
-                
+
                 startTime = audioCtx.currentTime - (pauseTime || 0);
                 source.start(0, pauseTime || 0);
             } else {
                 startTime = audioCtx.currentTime - pauseTime;
             }
-            
+
             await audioCtx.resume();
             isPlaying = true;
             playPauseButton.textContent = 'Pause';
@@ -86,7 +182,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    stopButton.addEventListener('click', function() {
+    stopButton.addEventListener('click', function(e) {
+        // Prevent ALL default behaviors
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Remove focus
+        this.blur();
+
+        // Your existing stop logic
         if (source) {
             source.stop();
             source = null;
@@ -95,6 +199,9 @@ document.addEventListener('DOMContentLoaded', function() {
         pauseTime = 0;
         playPauseButton.textContent = 'Play';
         stopButton.disabled = true;
+
+        // Prevent any scrolling
+        return false;
     });
 
     volumeSlider.addEventListener('input', function() {
@@ -105,13 +212,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // volumeLabel.textContent = `Volume: ${volumeSlider.value}%`;
     });
 
-    speedSlider.addEventListener('input', function() {
-        updateCarPosition(speedSlider.value, redCar, speedRange.min, speedRange.max);
-        if (source) {
-            source.playbackRate.value = speedSlider.value / 100;
+    speedSlider.addEventListener('input', function(e) {
+        // Add this line first - should show in console
+        console.log('Slider value:', e.target.value);
+         // Store the value
+        const value = e.target.value;
+
+        alert(`Slider value: ${value}`);
+        
+        // Your existing working code for the car
+        redCar.style.left = `${value}%`;
+        
+        // Your existing audio code
+        if (audioElement) {
+            audioElement.playbackRate = e.target.value / 100;
         }
-        // speedLabel.textContent = `Varispeed: ${(speedSlider.value / 100).toFixed(1)}`;
     });
+
 
     car.addEventListener('mousedown', function(event) {
         isDraggingVolume = true;
@@ -197,4 +314,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize car positions
     updateCarPosition(initialVolume, car, 0, 100);
     updateCarPosition(initialSpeed, redCar, speedRange.min, speedRange.max);
+
+    // Add this either inline or in your stylesheet
+    playPauseButton.style.touchAction = 'none';
+    stopButton.style.touchAction = 'none';
+
+    function handleTouchMoveVolume(event) {
+        if (!isDraggingVolume) return;
+        event.preventDefault();
+
+        const touch = event.touches[0];
+        const sliderRect = volumeSlider.getBoundingClientRect();
+        const carRect = car.getBoundingClientRect();
+
+        // Calculate position based on car center rather than edge
+        let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
+        newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
+
+        // Update car position
+        car.style.left = `${newLeft}px`;
+
+        // Update slider value
+        const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
+        volumeSlider.value = percentage;
+
+        if (gainNode) {
+            gainNode.gain.value = percentage / 100;
+        }
+    }
+
+    // Do the same for speed slider/red car
 });
+
