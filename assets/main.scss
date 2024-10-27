@@ -55,15 +55,34 @@ body {
 
 @media (max-width: 600px) {
     body {
-      padding: 0;
-      // height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(to top, rgba(255, 255, 255, 0.794), rgba(255, 255, 255, 1)),
-                  url("{{ site.baseurl }}/assets/images/CoryPortrait_mobile.jpg") center/100% 100% no-repeat;
-                  // change just the width of the photo
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: linear-gradient(
+            to top,
+            rgba(255, 255, 255, var(--day-opacity, 1)),
+            rgba(255, 255, 255, calc(var(--day-opacity, 1) * 0.74))
+        ),
+        url("/assets/images/CoryPortrait.JPG") center/cover no-repeat;
+    }
 
+    .page-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    main {
+        flex-shrink: 1;
+    }
+
+    .site-footer {
+        margin-top: auto;
+        position: relative;
+        bottom: 50px;
+        background: inherit; // Inherit the background from body
+        background-attachment: fixed; // Keep background fixed while footer movesZ
     }
 }
 
