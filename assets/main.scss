@@ -510,7 +510,10 @@ body {
   .content {
     text-align: center;
   }
-}
+    .site-nav {
+      z-index: 2;
+  }
+  }
 
 .page-content {
   padding: 3px 0px 0px 0px;
