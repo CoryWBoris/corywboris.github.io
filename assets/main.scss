@@ -505,3 +505,9 @@ body {
 #reverbSlider::-webkit-slider-thumb {
   opacity: 0;
 }
+// make text justified in the center on mobile
+@media (max-width: 600px) {
+  .content {
+    text-align: center;
+  }
+}
