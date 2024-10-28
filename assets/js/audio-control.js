@@ -257,24 +257,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     stopButton.addEventListener('click', function(e) {
-        // Prevent ALL default behaviors
         e.preventDefault();
         e.stopPropagation();
-
-        // Remove focus
         this.blur();
 
-        // Your existing stop logic
         if (source) {
             source.stop();
             source = null;
         }
+
+        // Reset audio nodes to ensure clean state
+        if (dryGain) {
+            dryGain.disconnect();
+            dryGain = null;
+        }
+        if (wetGain) {
+            wetGain.disconnect();
+            wetGain = null;
+        }
+        if (convolver) {
+            convolver.disconnect();
+        }
+        if (gainNode) {
+            gainNode.disconnect();
+        }
+
         isPlaying = false;
         pauseTime = 0;
         playPauseButton.textContent = 'Play';
         stopButton.disabled = true;
 
-        // Prevent any scrolling
         return false;
     });
 
@@ -297,8 +309,25 @@ document.addEventListener('DOMContentLoaded', async function() {
     reverbSlider.addEventListener('input', function() {
         updateCarPosition(reverbSlider.value, greenCar, reverbRange.min, reverbRange.max);
 
-        if (source && dryGain && wetGain) {  // Reference the gain nodes directly
-            const wetAmount = reverbSlider.value / 100;
+        const wetAmount = reverbSlider.value / 100;
+        
+        if (source && dryGain && wetGain) {
+            // Normal playing state
+            wetGain.gain.value = wetAmount;
+            dryGain.gain.value = 1 - wetAmount;
+        } else if (convolver && gainNode) {
+            // Stopped state with hanging reverb
+            // Create temporary gain nodes if needed
+            if (!wetGain) {
+                wetGain = audioCtx.createGain();
+                convolver.connect(wetGain);
+                wetGain.connect(gainNode);
+            }
+            if (!dryGain) {
+                dryGain = audioCtx.createGain();
+                dryGain.connect(gainNode);
+            }
+            
             wetGain.gain.value = wetAmount;
             dryGain.gain.value = 1 - wetAmount;
         }
