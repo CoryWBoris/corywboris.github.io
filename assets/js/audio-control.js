@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const car = document.querySelector('.car');
             const redCar = document.querySelector('.red-car');
             const greenCar = document.querySelector('.green-car');
-            
+
             let attempts = 0;
             const checkSVGs = setInterval(() => {
                 if (car?.offsetWidth > 0 && redCar?.offsetWidth > 0 && greenCar?.offsetWidth > 0) {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             window.scrollTo(0, header.offsetHeight);
         }
     }
-    
+
     scrollPastHeader();
 
     const playPauseButton = document.getElementById('playPauseButton');
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     let isDraggingVolume = false;
     let isDraggingSpeed = false;
     let isDraggingReverb = false;
-    const initialVolume = 75;
+    const initialVolume = 100;
     volumeSlider.value = initialVolume;
     // volumeLabel.textContent = `Volume: ${initialVolume}%`;
 
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         updateCarPosition(reverbSlider.value, greenCar, reverbRange.min, reverbRange.max);
 
         const wetAmount = reverbSlider.value / 100;
-        
+
         if (source && dryGain && wetGain) {
             // Normal playing state
             wetGain.gain.value = wetAmount;
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 dryGain = audioCtx.createGain();
                 dryGain.connect(gainNode);
             }
-            
+
             wetGain.gain.value = wetAmount;
             dryGain.gain.value = 1 - wetAmount;
         }
