@@ -1,16 +1,43 @@
 let audioCtx, gainNode, convolver, dryGain, wetGain,source, buffer, startTime, pauseTime, isPlaying = false;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Add this at the start
+document.addEventListener('DOMContentLoaded', async function() {
+    // Add SVG loading verification at the start
+    function waitForSVGs() {
+        return new Promise((resolve, reject) => {
+            const car = document.querySelector('.car');
+            const redCar = document.querySelector('.red-car');
+            const greenCar = document.querySelector('.green-car');
+            
+            let attempts = 0;
+            const checkSVGs = setInterval(() => {
+                if (car?.offsetWidth > 0 && redCar?.offsetWidth > 0 && greenCar?.offsetWidth > 0) {
+                    clearInterval(checkSVGs);
+                    resolve();
+                } else if (attempts >= 50) { // 5 seconds timeout
+                    clearInterval(checkSVGs);
+                    reject(new Error('SVG loading timeout'));
+                }
+                attempts++;
+            }, 100);
+        });
+    }
+
+    try {
+        await waitForSVGs();
+    } catch (error) {
+        console.error('Failed to load SVGs:', error);
+        location.reload(); // Automatically reload once if SVGs fail to load
+        return;
+    }
+
+    // Rest of your existing code starts here
     function scrollPastHeader() {
         const header = document.querySelector('header');
         if (header && 'ontouchstart' in window) {
-            // Force scroll past header immediately
             window.scrollTo(0, header.offsetHeight);
         }
     }
-
-    // Call it multiple times to ensure it works
+    
     scrollPastHeader();
 
     const playPauseButton = document.getElementById('playPauseButton');
@@ -58,17 +85,17 @@ document.addEventListener('DOMContentLoaded', function() {
     async function createImpulseResponse() {
         const length = audioCtx.sampleRate * 2.0; // 2 second impulse
         const impulseBuffer = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
-        
+
         for (let channel = 0; channel < 2; channel++) {
             const channelData = impulseBuffer.getChannelData(channel);
             for (let i = 0; i < length; i++) {
                 channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
             }
         }
-        
+
         convolver.buffer = impulseBuffer;
     }
-    
+
     const audioPath = "/assets/audio/sunsetBoulevard.mp3";
 
     async function loadAudio() {
@@ -196,13 +223,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 source.connect(dryGain);
                 source.connect(convolver);
                 convolver.connect(wetGain);
-                
+
                 // Connect both paths to main gain
                 dryGain.connect(gainNode);
                 wetGain.connect(gainNode);
-                
+
                 gainNode.connect(audioCtx.destination);
-                
+
                 // Set initial mix
                 dryGain.gain.value = 1 - (reverbSlider.value / 100);
                 wetGain.gain.value = reverbSlider.value / 100;
@@ -269,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     reverbSlider.addEventListener('input', function() {
         updateCarPosition(reverbSlider.value, greenCar, reverbRange.min, reverbRange.max);
-        
+
         if (source && dryGain && wetGain) {  // Reference the gain nodes directly
             const wetAmount = reverbSlider.value / 100;
             wetGain.gain.value = wetAmount;
@@ -317,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    
+
     function onMouseMoveVolume(event) {
         if (!isDraggingVolume) return;
         const sliderRect = volumeSlider.getBoundingClientRect();
@@ -389,13 +416,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCarPosition(value, carElement, min, max) {
         const sliderWidth = carElement.parentElement.querySelector('input[type="range"]').offsetWidth;
         const carWidth = carElement.offsetWidth;  // Get the car's width
-        
+
         // Adjust the available travel distance by subtracting the car width
         const adjustedWidth = sliderWidth - carWidth;
-        
+
         // Calculate position as a percentage of the adjusted width
         const carPosition = ((value - min) / (max - min)) * adjustedWidth;
-        
+
         carElement.style.left = `${carPosition}px`;
     }
 
@@ -482,4 +509,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
