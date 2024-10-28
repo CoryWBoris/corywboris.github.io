@@ -1,12 +1,40 @@
-let audioCtx, gainNode, convolver, dryGain, wetGain,source, buffer, startTime, pauseTime, isPlaying = false;
-
 document.addEventListener('DOMContentLoaded', async function() {
+    let audioCtx, gainNode, convolver, dryGain, wetGain,source, buffer, startTime, pauseTime, isPlaying = false, currentTime = 0, duration = 0, isDraggingTime = false, lastFrameTime = 0, pauseTimeUpdate = false, isDraggingVolume = false, isDraggingSpeed = false, isDraggingReverb = false;
+
+    const car = document.querySelector('.car');
+    const redCar = document.querySelector('.red-car');
+    const greenCar = document.querySelector('.green-car');
+    const purpleCar = document.querySelector('.purple-car');
+
+    const playPauseButton = document.getElementById('playPauseButton');
+    const stopButton = document.getElementById('stopButton');
+
+    const volumeSlider = document.getElementById('volumeSlider');
+    const speedSlider = document.getElementById('speedSlider');
+    const reverbSlider = document.getElementById('reverbSlider');
+    const timeSlider = document.getElementById('timeSlider');
+    
+    const volumeLabel = document.getElementById('volumeLabel');
+    const speedLabel = document.getElementById('speedLabel');
+    const reverbLabel = document.getElementById('reverbLabel');
+    const timeLabel = document.getElementById('timeLabel');
+
+    const initialVolume = 100;
+    const volumeRange = { min: 0, max: 100 };
+
+    const initialSpeed = 100;
+    const speedRange = { min: 50, max: 150 };
+    
+    const initialReverb = 0;
+    const reverbRange = { min: 0, max: 100 };
+    
+    const initialTime = 0;
+    const timeRange = { min: 0, max: 100 };
+
+    
     // Add SVG loading verification at the start
     function waitForSVGs() {
         return new Promise((resolve, reject) => {
-            const car = document.querySelector('.car');
-            const redCar = document.querySelector('.red-car');
-            const greenCar = document.querySelector('.green-car');
 
             let attempts = 0;
             const checkSVGs = setInterval(() => {
@@ -40,31 +68,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     scrollPastHeader();
 
-    const playPauseButton = document.getElementById('playPauseButton');
-    const stopButton = document.getElementById('stopButton');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const speedSlider = document.getElementById('speedSlider');
-    const reverbSlider = document.getElementById('reverbSlider');
-    const volumeLabel = document.getElementById('volumeLabel');
-    const speedLabel = document.getElementById('speedLabel');
-    const reverbLabel = document.getElementById('reverbLabel');
-    const car = document.querySelector('.car');
-    const redCar = document.querySelector('.red-car');
-    const greenCar = document.querySelector('.green-car');
 
-    let isDraggingVolume = false;
-    let isDraggingSpeed = false;
-    let isDraggingReverb = false;
-    const initialVolume = 100;
+
+    volumeSlider.min = volumeRange.min;
+    volumeSlider.max = volumeRange.max;
     volumeSlider.value = initialVolume;
-    // volumeLabel.textContent = `Volume: ${initialVolume}%`;
 
-    // Initialize speed to 1 (normal speed) and set the range to allow for variations
-    const initialSpeed = 100;
-    const speedRange = { min: 50, max: 150 };
 
-    const initialReverb = 0;
-    const reverbRange = { min: 0, max: 100 };
     reverbSlider.min = reverbRange.min;
     reverbSlider.max = reverbRange.max;
     reverbSlider.value = initialReverb;
@@ -75,6 +85,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     speedSlider.value = initialSpeed;
     // speedLabel.textContent = `Varispeed: ${(initialSpeed / 100).toFixed(1)}`;
 
+    // Add with other slider initializations
+    timeSlider.min = timeRange.min;
+    timeSlider.max = timeRange.max;
+    timeSlider.value = initialTime;
 
     // Audio context and buffer setup
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -104,8 +118,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            // Decode it
             buffer = await audioCtx.decodeAudioData(await response.arrayBuffer());
+            duration = buffer.duration;
+            timeSlider.max = duration;
+            timeRange.max = duration;
+            updateCarPosition(initialTime, purpleCar, timeRange.min, timeRange.max);
         } catch (err) {
             console.error(`Unable to fetch the audio file. Error: ${err.message}`);
         }
@@ -146,6 +163,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     volumeSlider.disabled = true;
     speedSlider.disabled = true;
     reverbSlider.disabled = true;
+    timeSlider.disabled = true;
     // Block all audio functionality until properly unlocked
     function handleSliderInteraction(e) {
         if (!audioUnlocked) {
@@ -163,6 +181,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     speedSlider.addEventListener('touchstart', handleSliderInteraction, true);
     reverbSlider.addEventListener('mousedown', handleSliderInteraction, true);
     reverbSlider.addEventListener('touchstart', handleSliderInteraction, true);
+    timeSlider.addEventListener('mousedown', handleSliderInteraction, true);
+    timeSlider.addEventListener('touchstart', handleSliderInteraction, true);
 
     // Prevent scroll bounce on button clicks
     playPauseButton.addEventListener('click', async function(e) {
@@ -191,6 +211,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 volumeSlider.disabled = false;
                 speedSlider.disabled = false;
                 reverbSlider.disabled = false;
+                timeSlider.disabled = false;
                 return;
             } catch (err) {
                 console.error('Audio unlock failed:', err);
@@ -247,6 +268,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             isPlaying = true;
             playPauseButton.textContent = 'Pause';
             if (stopButton) stopButton.disabled = false;
+            
+            // Start the time display update
+            requestAnimationFrame(updateTimeDisplay);
         } else {
             // Pause
             pauseTime = audioCtx.currentTime - startTime;
@@ -284,6 +308,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         isPlaying = false;
         pauseTime = 0;
+        currentTime = 0;
+        timeSlider.value = 0;
+        updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
+        
         playPauseButton.textContent = 'Play';
         stopButton.disabled = true;
 
@@ -291,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     volumeSlider.addEventListener('input', function() {
-        updateCarPosition(volumeSlider.value, car, 0, 100);
+        updateCarPosition(volumeSlider.value, car, volumeRange.min, volumeRange.max);
         if (gainNode) {
             gainNode.gain.value = volumeSlider.value / 100;
         }
@@ -327,12 +355,42 @@ document.addEventListener('DOMContentLoaded', async function() {
                 dryGain = audioCtx.createGain();
                 dryGain.connect(gainNode);
             }
-
+            
             wetGain.gain.value = wetAmount;
             dryGain.gain.value = 1 - wetAmount;
         }
     });
-
+    
+    timeSlider.addEventListener('input', function(event) {
+        const newTime = parseFloat(event.target.value);
+        currentTime = newTime;
+        
+        // Update timing variables
+        startTime = audioCtx.currentTime - (newTime / (speedSlider.value / 100));
+        lastFrameTime = audioCtx.currentTime;
+        
+        updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
+        
+        if (source && isPlaying) {
+            const currentSpeed = speedSlider.value / 100;
+            source.stop();
+            source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.playbackRate.value = currentSpeed;
+            
+            // Reconnect all nodes
+            source.connect(dryGain);
+            source.connect(convolver);
+            
+            // Start at the new time
+            source.start(0, newTime);
+            
+            // Request next animation frame
+            requestAnimationFrame(updateTimeDisplay);
+        } else {
+            pauseTime = newTime;
+        }
+    });
 
     car.addEventListener('mousedown', function(event) {
         isDraggingVolume = true;
@@ -354,14 +412,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('mouseup', onMouseUpReverb);
         document.addEventListener('selectstart', preventSelection); // Prevent text selection
     });
-
+    purpleCar.addEventListener('mousedown', function(event) {
+        isDraggingTime = true;
+        document.addEventListener('mousemove', onMouseMoveTime);
+        document.addEventListener('mouseup', onMouseUpTime);
+        document.addEventListener('selectstart', preventSelection);
+        event.preventDefault();
+    });
+    
     // Prevent slider click from moving the car
     volumeSlider.addEventListener('mousedown', function(event) {
         if (event.target !== car) {
             event.preventDefault();
         }
     });
-
+    
     speedSlider.addEventListener('mousedown', function(event) {
         if (event.target !== redCar) {
             event.preventDefault();
@@ -373,6 +438,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
+    timeSlider.addEventListener('mousedown', function(event) {
+        if (event.target !== purpleCar) {
+            event.preventDefault();
+        }
+    });
 
     function onMouseMoveVolume(event) {
         if (!isDraggingVolume) return;
@@ -420,6 +490,45 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         // reverbLabel.textContent = `Reverb: ${newValue.toFixed(0)}%`;
     }
+    function onMouseMoveTime(event) {
+        if (!isDraggingTime) return;
+        event.preventDefault();
+        
+        const sliderRect = timeSlider.getBoundingClientRect();
+        const carRect = purpleCar.getBoundingClientRect();
+        
+        // Calculate new position within bounds
+        let newLeft = event.clientX - sliderRect.left - (carRect.width / 2);
+        newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
+        
+        // Calculate time based on position relative to total duration
+        const percentage = newLeft / (sliderRect.width - carRect.width);
+        const newTime = percentage * duration;
+        
+        // Update times
+        currentTime = newTime;
+        startTime = audioCtx.currentTime - (newTime / (speedSlider.value / 100));
+        lastFrameTime = audioCtx.currentTime;
+        
+        // Update slider and car position
+        timeSlider.value = newTime;
+        updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
+        
+        // Update audio playback position without stopping
+        if (isPlaying) {
+            if (source) {
+                source.stop();
+                source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.playbackRate.value = speedSlider.value / 100;
+                source.connect(dryGain);
+                source.connect(convolver);
+                source.start(0, newTime);
+            }
+        } else {
+            pauseTime = newTime;
+        }
+    }
 
     function onMouseUpVolume() {
         isDraggingVolume = false;
@@ -442,6 +551,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.removeEventListener('selectstart', preventSelection); // Re-enable text selection
     }
 
+    function onMouseUpTime() {
+        isDraggingTime = false;
+        lastFrameTime = audioCtx.currentTime;
+        
+        // Immediately request a new animation frame to continue movement
+        if (isPlaying) {
+            requestAnimationFrame(updateTimeDisplay);
+        }
+        
+        document.removeEventListener('mousemove', onMouseMoveTime);
+        document.removeEventListener('mouseup', onMouseUpTime);
+        document.removeEventListener('selectstart', preventSelection);
+    }
+
     function updateCarPosition(value, carElement, min, max) {
         const sliderWidth = carElement.parentElement.querySelector('input[type="range"]').offsetWidth;
         const carWidth = carElement.offsetWidth;  // Get the car's width
@@ -460,9 +583,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Initialize car positions
-    updateCarPosition(initialVolume, car, 0, 100);
+    updateCarPosition(initialVolume, car, volumeRange.min, volumeRange.max);
     updateCarPosition(initialSpeed, redCar, speedRange.min, speedRange.max);
     updateCarPosition(initialReverb, greenCar, reverbRange.min, reverbRange.max);
+    updateCarPosition(initialTime, purpleCar, timeRange.min, timeRange.max);
     // Add this either inline or in your stylesheet
     playPauseButton.style.touchAction = 'none';
     stopButton.style.touchAction = 'none';
@@ -485,7 +609,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Update slider value
         const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
         volumeSlider.value = percentage;
-
+        
         if (gainNode) {
             gainNode.gain.value = percentage / 100;
         }
@@ -493,7 +617,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     function handleTouchMoveSpeed(event) {
         if (!isDraggingSpeed) return;
         event.preventDefault();
-
+        
         const touch = event.touches[0];
         const sliderRect = speedSlider.getBoundingClientRect();
         const carRect = redCar.getBoundingClientRect();
@@ -512,15 +636,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             source.playbackRate.value = percentage / 100;
         }
     }
-
+    
     function handleTouchMoveReverb(event) {
         if (!isDraggingReverb) return;
         event.preventDefault();
-
+        
         const touch = event.touches[0];
         const sliderRect = reverbSlider.getBoundingClientRect();
         const carRect = greenCar.getBoundingClientRect();
-
+        
         let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
         newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
 
@@ -537,4 +661,82 @@ document.addEventListener('DOMContentLoaded', async function() {
             dryGain.gain.value = 1 - wetAmount;
         }
     }
+    
+    function handleTouchMoveTime(event) {
+        if (!isDraggingTime) return;
+        event.preventDefault();
+
+        const touch = event.touches[0];
+        const sliderRect = timeSlider.getBoundingClientRect();
+        const carRect = purpleCar.getBoundingClientRect();
+
+        let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
+        newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
+
+        const percentage = newLeft / (sliderRect.width - carRect.width);
+        const newTime = percentage * duration;
+
+        timeSlider.value = newTime;
+        updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
+
+        if (source && isPlaying) {
+            source.stop();
+            startTime = audioCtx.currentTime - newTime;
+            createAndStartSource();
+        } else {
+            pauseTime = newTime;
+        }
+    }
+
+    function updateTimeDisplay() {
+        if (source && isPlaying && !pauseTimeUpdate) {  // Add check for pauseTimeUpdate
+            // Get current speed from red car (always positive)
+            const speedPercentage = speedSlider.value;
+            const currentSpeed = speedPercentage / 100;
+            
+            // Calculate time elapsed since last frame
+            const now = audioCtx.currentTime;
+            const frameDelta = now - lastFrameTime;
+            lastFrameTime = now;
+            
+            // Add the time increment (always moving forward)
+            currentTime += frameDelta * currentSpeed;
+            
+            // If we've reached the end, loop back to start
+            if (currentTime >= duration) {
+                currentTime = 0;
+                startTime = audioCtx.currentTime;
+                
+                // Stop current source
+                source.stop();
+                
+                // Create and start new source
+                source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+                source.playbackRate.value = currentSpeed;
+                
+                // Reconnect all audio nodes
+                source.connect(dryGain);
+                source.connect(convolver);
+                source.start(0);
+            }
+            
+            // Update slider and car position
+            timeSlider.value = currentTime;
+            updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
+            
+            // Always continue updating while playing
+            requestAnimationFrame(updateTimeDisplay);
+        }
+    }
 });
+
+
+
+
+
+
+
+
+
