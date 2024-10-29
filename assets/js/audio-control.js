@@ -261,9 +261,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // Set initial mix
                 dryGain.gain.value = 1 - (reverbSlider.value / 100);
                 wetGain.gain.value = reverbSlider.value / 100;
-                source.loop = true;
+                source.loop = false;
                 source.playbackRate.value = speedSlider.value / 100;
                 gainNode.gain.value = volumeSlider.value / 100;
+
+                // If we're at the end, start from beginning
+                if (currentTime >= duration) {
+                    currentTime = 0;
+                    pauseTime = 0;
+                }
 
                 startTime = audioCtx.currentTime - (pauseTime || 0);
                 source.start(0, pauseTime || 0);
@@ -292,35 +298,42 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.stopPropagation();
         this.blur();
 
-        if (source) {
-            source.stop();
-            source = null;
-        }
+        if (isPlaying) {
+            // Act as pause button if playing
+            if (source) {
+                pauseTime = audioCtx.currentTime - startTime;
+                audioCtx.suspend();
+                isPlaying = false;
+                playPauseButton.textContent = 'Play';
+            }
+        } else {
+            // Reset to beginning if already paused
+            if (source) {
+                source.stop();
+                source = null;
+            }
 
-        // Reset audio nodes to ensure clean state
-        if (dryGain) {
-            dryGain.disconnect();
-            dryGain = null;
-        }
-        if (wetGain) {
-            wetGain.disconnect();
-            wetGain = null;
-        }
-        if (convolver) {
-            convolver.disconnect();
-        }
-        if (gainNode) {
-            gainNode.disconnect();
-        }
+            // Reset audio nodes to ensure clean state
+            if (dryGain) {
+                dryGain.disconnect();
+                dryGain = null;
+            }
+            if (wetGain) {
+                wetGain.disconnect();
+                wetGain = null;
+            }
+            if (convolver) {
+                convolver.disconnect();
+            }
+            if (gainNode) {
+                gainNode.disconnect();
+            }
 
-        isPlaying = false;
-        pauseTime = 0;
-        currentTime = 0;
-        timeSlider.value = 0;
-        updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
-        
-        playPauseButton.textContent = 'Play';
-        stopButton.disabled = true;
+            pauseTime = 0;
+            currentTime = 0;
+            timeSlider.value = 0;
+            updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
+        }
 
         return false;
     });
@@ -708,16 +721,26 @@ document.addEventListener('DOMContentLoaded', async function() {
             currentTime += frameDelta * currentSpeed;
 
             if (currentTime >= duration) {
-                currentTime = 0;
-                startTime = audioCtx.currentTime;
-                source.stop();
-                source = audioCtx.createBufferSource();
-                source.buffer = buffer;
-                source.loop = true;
-                source.playbackRate.value = currentSpeed;
-                source.connect(dryGain);
-                source.connect(convolver);
-                source.start(0);
+                // Stop playback but maintain position at the end
+                if (source) {
+                    source.stop();
+                    source = null;
+                }
+                isPlaying = false;
+                playPauseButton.textContent = 'Play';
+                currentTime = duration; // Ensure we stay at the end
+                timeSlider.value = duration;
+                updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
+                
+                // Optionally disconnect nodes to save resources
+                if (dryGain) dryGain.disconnect();
+                if (wetGain) wetGain.disconnect();
+                if (convolver) convolver.disconnect();
+                if (gainNode) gainNode.disconnect();
+                
+                // Store the end position for future reference
+                pauseTime = duration;
+                return; // Stop the animation frame loop
             }
 
             timeSlider.value = currentTime;
