@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const playPauseButton = document.getElementById('playPauseButton');
     const stopButton = document.getElementById('stopButton');
+    // Now we can safely add the visibility change handler
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && isPlaying) {
+            playPauseButton.click();
+        }
+    });
+    
 
     const volumeSlider = document.getElementById('volumeSlider');
     const speedSlider = document.getElementById('speedSlider');
@@ -566,15 +573,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function updateCarPosition(value, carElement, min, max) {
-        const sliderWidth = carElement.parentElement.querySelector('input[type="range"]').offsetWidth;
-        const carWidth = carElement.offsetWidth;  // Get the car's width
-
+        const slider = carElement.parentElement.querySelector('input[type="range"]');
+        const sliderWidth = slider.offsetWidth;
+        const carWidth = carElement.offsetWidth;
+    
         // Adjust the available travel distance by subtracting the car width
-        const adjustedWidth = sliderWidth - carWidth;
-
+        const adjustedWidth = sliderWidth - 1.5*carWidth;
+    
         // Calculate position as a percentage of the adjusted width
-        const carPosition = ((value - min) / (max - min)) * adjustedWidth;
-
+        const carPosition = Math.round(((value - min) / (max - min)) * adjustedWidth + carWidth/3.8);
+    
         carElement.style.left = `${carPosition}px`;
     }
 
@@ -689,44 +697,32 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function updateTimeDisplay() {
-        if (source && isPlaying && !pauseTimeUpdate) {  // Add check for pauseTimeUpdate
-            // Get current speed from red car (always positive)
+        if (source && isPlaying && !pauseTimeUpdate) {
             const speedPercentage = speedSlider.value;
             const currentSpeed = speedPercentage / 100;
-            
-            // Calculate time elapsed since last frame
+
             const now = audioCtx.currentTime;
             const frameDelta = now - lastFrameTime;
             lastFrameTime = now;
-            
-            // Add the time increment (always moving forward)
+
             currentTime += frameDelta * currentSpeed;
-            
-            // If we've reached the end, loop back to start
+
             if (currentTime >= duration) {
                 currentTime = 0;
                 startTime = audioCtx.currentTime;
-                
-                // Stop current source
                 source.stop();
-                
-                // Create and start new source
                 source = audioCtx.createBufferSource();
                 source.buffer = buffer;
                 source.loop = true;
                 source.playbackRate.value = currentSpeed;
-                
-                // Reconnect all audio nodes
                 source.connect(dryGain);
                 source.connect(convolver);
                 source.start(0);
             }
-            
-            // Update slider and car position
+
             timeSlider.value = currentTime;
             updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
-            
-            // Always continue updating while playing
+
             requestAnimationFrame(updateTimeDisplay);
         }
     }
