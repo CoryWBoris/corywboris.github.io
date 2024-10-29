@@ -1,46 +1,44 @@
 ---
 ---
 @import "minima";
+@import "_footer";
 
+// Base styles
 body {
-    user-select: none; /* Disable text selection */
+    user-select: none;
 }
 
+// Background styles
 .bg {
     position: relative;
     z-index: 1;
 
     .night-background {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         opacity: 0;
         transition: opacity 0.3s ease;
         pointer-events: none;
     }
 
-    .stars {
+    .stars, .twinkling {
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
+    }
+
+    .stars {
         background: #000 url("/assets/images/stars.png") repeat top center;
     }
 
     .twinkling {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
         background: transparent url("/assets/images/twinkling.png") repeat top center;
         animation: move-twinkle 200s linear infinite;
     }
 }
 
+// Media queries for responsive layout
 @media (min-width: 601px) {
     body {
         background: linear-gradient(
@@ -81,209 +79,64 @@ body {
         margin-top: auto;
         position: relative;
         bottom: 50px;
-        background: inherit; // Inherit the background from body
-        background-attachment: fixed; // Keep background fixed while footer movesZ
-    }
-}
-
-/* Hide mobile footer by default */
-.mobile-footer {
-  display: none;
-}
-
-/* Show mobile footer and hide desktop footer on small screens */
-@media (max-width: 768px) {
-  .desktop-footer {
-    display: none;
-  }
-  .mobile-footer {
-    display: block;
-  }
-}
-
-.horizontal-list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0; // Ensure no margin
-  align-items: center; // Align items vertically in the center
-}
-.social-media-list {
-  display: flex;
-  justify-content: center;
-  gap: 27px; /* Adjust the gap between icons as needed */
-  list-style: none; /* Remove default list styling */
-  padding: 0; /* Remove default padding */
-  margin: 20px 0; /* Add some margin for spacing */
-}
-
-.social-media-list li {
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
-}
-.horizontal-list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  align-items: center; /* Align items vertically in the center */
-  justify-content: left;
-}
-@media (min-width: 601px) {
-  .content {
-      // position: absolute;
-      bottom: 0;
-      // background: rgba(0, 0, 0, 0.5);
-      // color: #f1f1f1;
-      width: 100%;
-      padding: 20px;
-      text-align: center;
-  }
-
-
-  .social-media-list a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0; /* Remove default padding */
-    margin: 0; /* Remove default margin */
-  }
-
-  .social-media-list .svg-icon {
-    width: 50px; /* Adjust the size of the icons as needed */
-    height: 50px;
-    transition: filter 0.3s ease, transform 0.3s ease;
-  }
-
-  .social-media-list .svg-icon:hover {
-    transform: scale(1.2); /* Enlarge the hovered icon */
-  }
-
-  // .social-media-list .svg-icon:not(:hover) {
-  //   filter: blur(2px); /* Apply blur to non-hovered icons */
-  // }
-
-  .social-media-list:hover .svg-icon {
-    filter: blur(2px); /* Apply blur to all icons when the list is hovered */
-  }
-
-  .social-media-list:hover .svg-icon:hover {
-    filter: none; /* Remove blur from the hovered icon */
-  }
-
-  .horizontal-list li {
-    margin-right: 10px;
-  }
-
-  .horizontal-list .svg-icon {
-    vertical-align: middle; /* Ensure SVG icons are vertically aligned */
-  }
-  .site-footer {
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 0; // Reduce padding
-    clear: both;
-  }
-
-  .footer-heading {
-    font-size: 18px;
-    margin-bottom: 5px; // Reduce margin
-    margin-left: 14px; // Add margin to the left
-  }
-
-  .contact-list,
-  .social-media-list {
-    list-style: none;
-    margin-left: 0;
-    padding: 0; // Ensure no padding
-  }
-
-  .footer-col-wrapper {
-    font-size: 15px;
-    color: #828282;
-    margin-left: -15px;
-  }
-
-  .footer-col {
-    float: left;
-    margin-bottom: 5px; // Reduce margin
-    padding-left: 15px;
-  }
-
-
-  .horizontal-list {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0; // Ensure no margin
-    align-items: center; // Align items vertically in the center
-  }
-
-  // .horizontal-list li {
-  //   margin-right: 10px;
-  // }
-
-  .horizontal-list .svg-icon {
-    vertical-align: middle; // Ensure SVG icons are vertically aligned
-  }
-
-  .social-media-list.horizontal-list {
-      display: flex;
-      justify-content: flex-start; // Align to the left
-      align-items: center;
-      gap: 0; // Remove gap between items
-      margin: 0;
-      padding: 0;
-      list-style: none;
-
-      li {
-        margin: 0;
-        padding: 0;
-        line-height: 1; // Prevent line-height inheritance
-
-        // Remove any spacing between list items
-        & + li {
-          padding-top: 0;
-        }
-      }
-
-      a {
+        background: inherit;
+        background-attachment: fixed;
+        height: 60px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        z-index: 100;
         display: flex;
         align-items: center;
-        padding: 0;
-        margin: 0;
-      }
+        justify-content: center;
 
-      .svg-icon {
-        width: 50px;
-        height: 50px;
-        padding: 15px; // Remove padding from icons
-        margin: 0;
-        transition: filter 0.3s ease, transform 0.3s ease;
-      }
+        .footer-col-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            flex-direction: column;
+        }
+
+        .footer-col {
+            width: 100%;
+            justify-content: center;
+            margin: 0;
+            padding: 0 15px;
+        }
+
+        .social-media-list,
+        .horizontal-list {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 27px;  // Matching your original spacing
+            margin: 20px 0;
+
+            li {
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+            }
+        }
     }
-
-  // Update footer column styles
-  .footer-col-2 {
-  padding: 0; // Remove padding from footer column
-  }
-
-  .footer-col-wrapper {
-  margin-left: 0; // Remove margin that might cause misalignment
-  }
-
-  .footer-col {
-      margin-right: 173px;
-  }
 }
-@media (max-width: 600px) {
-  .site-footer.h-card {
-    padding: 0;
-  }
-
-  .social-media-list.horizontal-list {
-    margin: 0;
-  }
-
+// Desktop styles
+@media (min-width: 601px) {
+    .content {
+        bottom: 0;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
 }
+
+// Audio controls
 .audio-container {
     display: flex;
     flex-direction: column;
@@ -296,13 +149,13 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 100%; /* Ensure the control container takes full width */
+    width: 100%;
 }
 
-#playPauseButton {
+// Button styles
+#playPauseButton, #stopButton {
     font-size: 2em;
     padding: 10px 20px;
-    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -312,69 +165,58 @@ body {
     width: 100%;
 }
 
-#playPauseButton:hover {
-    background-color: #0056b3;
+#playPauseButton {
+    background-color: #007bff;
+    &:hover { background-color: #0056b3; }
 }
 
 #stopButton {
-  font-size: 2em;
-  padding: 10px 20px;
-  background-color: #ff0080;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 100%;
+    background-color: #ff0080;
+    &:hover { background-color: #ff0400; }
 }
 
-#stopButton:hover {
-  background-color: #ff0400;
-}
-
+// Slider containers
 .volume-slider-container,
 .speed-slider-container,
 .reverb-slider-container,
 .time-slider-container {
     position: relative;
     width: 100%;
-    // max-width: 400px;
 }
 
+// Road styling
 .road {
     position: relative;
     width: 100%;
     height: 10px;
-    background-color: #ccc; /* Asphalt color */
+    background-color: #ccc;
     border-radius: 5px;
     margin-top: 20px;
-    z-index: 1; /* Add z-index to road */
-    /* Add subtle shadow at the edges */
+    z-index: 1;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.2),
                 inset 0 -1px 2px rgba(0,0,0,0.2);
     transform: translateZ(0);
     backface-visibility: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 25%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-image: linear-gradient(
+            to right,
+            white 20px,
+            transparent 20px 40px
+        );
+        background-size: 40px 100%;
+        transform: translateY(-50%);
+        will-change: transform;
+    }
 }
 
-.road::after {
-  content: '';
-  position: absolute;
-  top: 25%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-image: linear-gradient(to right,
-      white 20px,
-      transparent 20px 40px
-  );
-  background-size: 40px 100%;
-  transform: translateY(-50%);
-  /* Ensure line stays fixed */
-  will-change: transform;
-
-}
-
+// Slider styles
 #volumeSlider,
 #speedSlider,
 #reverbSlider,
@@ -388,299 +230,78 @@ body {
     left: 0;
     margin: 0;
     padding: 0;
+    touch-action: none;
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 76px;
+        height: 76px;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0;
+        touch-action: none;
+    }
+
+    &::-moz-range-thumb {
+        width: 76px;
+        height: 76px;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0;
+        touch-action: none;
+    }
 }
 
-#volumeSlider::-webkit-slider-thumb,
-#speedSlider::-webkit-slider-thumb,
-#reverbSlider::-webkit-slider-thumb,
-#timeSlider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 76px;
-    height: 76px;
-    background: transparent;
-    cursor: pointer;
-}
-
-#volumeSlider::-moz-range-thumb,
-#speedSlider::-moz-range-thumb,
-#reverbSlider::-moz-range-thumb,
-#timeSlider::-moz-range-thumb {
-    width: 76px;
-    height: 76px;
-    background: transparent;
-    cursor: pointer;
-}
-
+// Car styles
 .car, .red-car, .green-car, .purple-car {
     position: absolute;
     top: -13px;
     left: 50%;
-    transform: translateX(-50%);
-
-    // make the cars a lot bigger, keeping in mind they are svgs and need to be scaled
     transform: scale(1.9) !important;
-
     cursor: pointer;
-    z-index: 3; /* Make cars appear under the road */
+    z-index: 3;
+    touch-action: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-/* Make sure the input range is properly layered */
-#volumeSlider,
-#speedSlider,
-#reverbSlider,
-#timeSlider {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 10px;
-    background: transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-}
-
-/* Ensure the car is draggable */
-@media (min-width: 601px) {
-.car, .red-car, .green-car, .purple-car {
-    pointer-events: auto;
-}
-}
-@media (max-width: 600px) {
-  .car, .red-car, .green-car, .purple-car {
-    pointer-events: none;
-}
-}
-/* Make sure SVG doesn't interfere with dragging */
-.car svg, .red-car svg, .green-car svg, .purple-car svg {
+%car-svg {
     fill-opacity: 1;
     stroke: none;
     background: none;
-    /* This is the key part */
     shape-rendering: geometricPrecision;
-    /* Force hardware acceleration */
     transform: translate3d(0,0,0);
-}
-
-/* Target both the container and SVG */
-.car, .red-car, .green-car, .purple-car,
-.car svg, .red-car svg, .green-car svg, .purple-car svg {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    touch-action: none;
-}
-
-/* Ensure no mobile selection */
-.car, .red-car, .green-car, .purple-car {
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-.car svg, .red-car svg, .green-car svg, .purple-car svg {
-    /* Remove any border */
     border: 0;
-    /* Remove any shadow */
     box-shadow: none;
     filter: none;
-    /* Remove any background that might be causing transparency */
-    background: none;
-    /* Force hardware acceleration to possibly help with rendering */
-    transform: translateZ(0);
-    /* Ensure clean edges */
-    shape-rendering: crispEdges;
-}
-
-.car, .red-car, .green-car, .purple-car {
-    -webkit-appearance: none;
-    background: none;
-    box-shadow: none;
-}
-
-.car svg, .red-car svg, .green-car svg, .purple-car svg {
-    -webkit-appearance: none;
-    background: none;
-    box-shadow: none;
-}
-
-.car, .red-car, .green-car, .purple-car {
-    /* Remove any container effects */
-    -webkit-appearance: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    /* Force flat rendering */
-    transform: translateZ(0);
-    /* Ensure no elevation */
-    z-index: 1;
-}
-
-/* Target WebKit's SVG container specifically */
-.car svg, .red-car svg, .green-car svg, .purple-car svg {
-    /* Remove default WebKit styling */
-    -webkit-filter: none;
-    filter: none;
-    /* Force flat rendering */
     will-change: transform;
-    /* Ensure clean edges */
     shape-rendering: optimizeSpeed;
 }
-#volumeSlider::-webkit-slider-thumb,
-#speedSlider::-webkit-slider-thumb,
-#reverbSlider::-webkit-slider-thumb,
-#timeSlider::-webkit-slider-thumb {
-  opacity: 0;
+
+.car svg, .red-car svg, .green-car svg, .purple-car svg {
+    @extend %car-svg;
 }
-// make text justified in the center on mobile
+
+// Mobile-specific styles
 @media (max-width: 600px) {
-  .content {
-    text-align: center;
-  }
+    .content {
+        text-align: center;
+    }
+
     .site-nav {
-      z-index: 2;
-  }
-  }
+        z-index: 2;
+    }
+
+    .car, .red-car, .green-car, .purple-car {
+        pointer-events: none;
+    }
+
+    // Footer styles preserved as is
+    
+}
 
 .page-content {
-  padding: 3px 0px 0px 0px;
-}
-@media (max-width: 600px) {
-site-footer.h-card {
-  padding: 0;
-}
-
-/* Footer styles */
-.site-footer {
-  /* Use a fixed height instead of relative height */
-  height: 60px; /* Adjust this value to match your header height */
-
-  /* Ensure the footer stays at the bottom */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  /* Prevent content overflow */
-  overflow: hidden;
-
-
-
-  /* Ensure footer stays above content */
-  z-index: 100;
-}
-
-
-
-/* For elements inside the footer */
-.site-footer .footer-content {
-  /* Keep content centered within the footer */
-  height: 100%;
-  display: flex;
-  align-items: center;
-
-  /* Prevent content from expanding footer */
-  max-height: 100%;
-}
-
-
-
-/* Footer styles */
-.site-footer {
-  /* Use a fixed height instead of relative height */
-  height: 60px; /* Adjust this value to match your header height */
-
-  /* Ensure the footer stays at the bottom */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  /* Prevent content overflow */
-  overflow: hidden;
-
-
-  /* Ensure footer stays above content */
-  z-index: 100;
-
-  /* Center all content vertically */
-  display: flex;
-  align-items: center;
-}
-
-
-
-/* For the container that holds your footer items */
-.site-footer .footer-content {
-  /* Take up full width of footer */
-  width: 100%;
-
-  /* Center items horizontally and vertically */
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-
-  /* Prevent content from expanding footer */
-  height: 100%;
-}
-
-.site-footer {
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  // Container for footer content
-  .footer-col-wrapper {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-  }
-
-  // Column styles
-  .footer-col {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0 15px;
-  }
-
-  // Social media list
-  .social-media-list {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    li {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  // Horizontal list
-  .horizontal-list {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    li {
-      display: flex;
-      align-items: center;
-    }
-  }
-}
-
-// Media query for mobile
-
-  .site-footer {
-    .footer-col-wrapper {
-      flex-direction: column;
-    }
-
-    .footer-col {
-      width: 100%;
-      justify-content: center;
-    }
-  }
+    padding: 3px 0 0 0;
 }
