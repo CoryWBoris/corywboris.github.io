@@ -335,6 +335,16 @@ body {
         margin: 0;
         padding: 0;
     }
+
+    a {
+        -webkit-tap-highlight-color: transparent;  /* for iOS */
+        -webkit-touch-callout: none;              /* for iOS */
+        -webkit-user-select: none;                /* for iOS */
+        -khtml-user-select: none;                 /* for old browsers */
+        -moz-user-select: none;                   /* for Firefox */
+        -ms-user-select: none;                    /* for IE/Edge */
+        user-select: none;                        /* standard syntax */
+    }
 }
 
 // Desktop footer styles
@@ -507,5 +517,8 @@ body {
                 align-items: center;
             }
         }
+    
     }
+
+    
 }
