@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Also clear on beforeunload
     window.addEventListener('beforeunload', clearAudioCache);
 
-    const unlockAudio = new Audio('/assets/audio/Please_Ignore_This_Audio_As_I_Needed_It_For_WebAudio_Compatibility.mp3');
+    const unlockAudio = new Audio('/assets/audio/a.wav');
     let audioUnlocked = false;
 
     // Disable all controls until audio is enabled
