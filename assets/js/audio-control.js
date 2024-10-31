@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const currentSpeed = speedSlider.value / 100;
             source.stop();
             source = audioCtx.createBufferSource();
-            source.buffer = buffer;
+            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
             source.playbackRate.value = currentSpeed;
             
             // Reconnect all nodes
@@ -733,28 +733,52 @@ document.addEventListener('DOMContentLoaded', async function() {
         const percentage = newLeft / (sliderRect.width - carRect.width);
         const newTime = percentage * duration;
 
+        // Only update position and time values
+        currentTime = newTime;
         timeSlider.value = newTime;
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
 
-        if (source && isPlaying) {
-            source.stop();
-            source = audioCtx.createBufferSource();
-            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
-            source.playbackRate.value = speedSlider.value / 100;
-            source.connect(dryGain);
-            source.connect(convolver);
-            
-            // Calculate correct start position based on direction
-            const startPosition = isReversed ? 
-                duration - newTime : 
-                newTime;
-            
-            source.start(0, startPosition);
-            startTime = audioCtx.currentTime - newTime;
-        } else {
-            pauseTime = newTime;
+        // Pause audio updates during drag
+        pauseTimeUpdate = true;
+    }
+
+    function handleTouchEndTime() {
+        if (!isDraggingTime) return;
+        
+        isDraggingTime = false;
+        lastFrameTime = audioCtx.currentTime;
+        
+        // Clean up listeners
+        document.removeEventListener('touchmove', handleTouchMoveTime);
+        document.removeEventListener('touchend', handleTouchEndTime);
+        document.removeEventListener('touchcancel', handleTouchEndTime);
+        
+        if (isPlaying) {
+            if (source) {
+                source.stop();
+                source = audioCtx.createBufferSource();
+                source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+                source.playbackRate.value = speedSlider.value / 100;
+                source.connect(dryGain);
+                source.connect(convolver);
+                
+                const startPosition = isReversed ? duration - currentTime : currentTime;
+                source.start(0, startPosition);
+                startTime = audioCtx.currentTime - currentTime;
+                lastFrameTime = audioCtx.currentTime;
+            }
+            requestAnimationFrame(updateTimeDisplay);
         }
     }
+
+    // Keep only this touchstart listener
+    purpleCar.addEventListener('touchstart', function(event) {
+        isDraggingTime = true;
+        document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
+        document.addEventListener('touchend', handleTouchEndTime);
+        document.addEventListener('touchcancel', handleTouchEndTime);
+        event.preventDefault();
+    });
 
     function updateTimeDisplay() {
         if (source && isPlaying && !pauseTimeUpdate) {
@@ -935,6 +959,38 @@ document.addEventListener('DOMContentLoaded', async function() {
         convolver = audioCtx.createConvolver();
         createImpulseResponse(); // Recreate the impulse response
     }
+
+    // Add touchend handler to properly maintain reversed state
+    purpleCar.addEventListener('touchend', function() {
+        isDraggingTime = false;
+        lastFrameTime = audioCtx.currentTime;
+        
+        if (isPlaying) {
+            // Ensure we're using the correct buffer direction when resuming playback
+            if (source) {
+                source.stop();
+                source = audioCtx.createBufferSource();
+                source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+                source.playbackRate.value = speedSlider.value / 100;
+                source.connect(dryGain);
+                source.connect(convolver);
+                
+                const startPosition = isReversed ? duration - currentTime : currentTime;
+                source.start(0, startPosition);
+                startTime = audioCtx.currentTime - currentTime;
+                lastFrameTime = audioCtx.currentTime;
+            }
+            requestAnimationFrame(updateTimeDisplay);
+        }
+    });
+
+    purpleCar.addEventListener('touchstart', function(event) {
+        isDraggingTime = true;
+        document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
+        document.addEventListener('touchend', handleTouchEndTime);
+        document.addEventListener('touchcancel', handleTouchEndTime);
+        event.preventDefault();
+    });
 });
 
 
