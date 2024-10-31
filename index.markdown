@@ -13,7 +13,6 @@ permalink: /
         <h1>Welcome to my site!</h1>
         <p>Check out my pride and joy, <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a></p>
         <p>Enjoy sunsetBoulevard by COBOMOJO below.</p>
-        <p>Hint: the blue car is volume.</p>
     </div>
     <div class="audio-container">
         <div class="control-container">
