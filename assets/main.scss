@@ -152,7 +152,7 @@ body {
 }
 
 // Button styles
-#playPauseButton, #stopButton {
+#playPauseButton, #stopButton, #reverseButton {
     font-size: 2em;
     padding: 10px 20px;
     color: white;
@@ -172,6 +172,11 @@ body {
 #stopButton {
     background-color: #ff0080;
     &:hover { background-color: #ff0400; }
+}
+
+#reverseButton {
+    background-color: #00d9ff;
+    &:hover { background-color: #00d9ff; }
 }
 
 // Slider containers
@@ -264,6 +269,10 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.car.reversed, .red-car.reversed, .green-car.reversed, .purple-car.reversed {
+    transform: scale(1.9) scaleX(-1) !important;
 }
 
 %car-svg {
@@ -522,3 +531,17 @@ body {
 
     
 }
+
+// // Add this CSS for the reverse button
+// #reverseButton {
+//     height: 2.5em;  /* Set a fixed height that fits both states */
+//     line-height: 2.5em;  /* Center text vertically */
+//     min-width: 120px;  /* Set a fixed width that fits both words */
+//     overflow: visible;  /* Allow tall characters to overflow */
+//     position: relative;  /* Ensure button stays in place */
+//     padding: 0 15px;  /* Horizontal padding for text */
+//     font-size: 1em;  /* Consistent font size */
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+// }

@@ -17,9 +17,10 @@ permalink: /
     </div>
     <div class="audio-container">
         <div class="control-container">
-            <button id="playPauseButton">Play</button>
             <div class="button-container">
-                <button id="stopButton" type="button" tabindex="-1">Stop</button>
+            <button id="playPauseButton">Play</button>
+                <button id="stopButton">Stop</button>
+                <button id="reverseButton" style="transform: scaleX(-1)">Backwards</button>
             </div>
         </div>
         <!-- <audio id="audioPlayer" src="{{ site.baseurl }}/assets/audio/sunsetBoulevard.mp3"></audio> -->

@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    let audioCtx, gainNode, convolver, dryGain, wetGain,source, buffer, startTime, pauseTime, isPlaying = false, currentTime = 0, duration = 0, isDraggingTime = false, lastFrameTime = 0, pauseTimeUpdate = false, isDraggingVolume = false, isDraggingSpeed = false, isDraggingReverb = false;
+    let audioCtx, gainNode, convolver, dryGain, wetGain, source, buffer, startTime, pauseTime, isPlaying = false, currentTime = 0, duration = 0, isDraggingTime = false, lastFrameTime = 0, pauseTimeUpdate = false, isDraggingVolume = false, isDraggingSpeed = false, isDraggingReverb = false, isReversed = false;
 
     const car = document.querySelector('.car');
     const redCar = document.querySelector('.red-car');
     const greenCar = document.querySelector('.green-car');
     const purpleCar = document.querySelector('.purple-car');
+    const reverseButton = document.getElementById('reverseButton');
 
     const playPauseButton = document.getElementById('playPauseButton');
     const stopButton = document.getElementById('stopButton');
@@ -171,12 +172,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     speedSlider.disabled = true;
     reverbSlider.disabled = true;
     timeSlider.disabled = true;
+    if (reverseButton) {
+        reverseButton.disabled = true;
+    }
     // Block all audio functionality until properly unlocked
     function handleSliderInteraction(e) {
         if (!audioUnlocked) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Please enable audio first');
             return false;
         }
     }
@@ -193,9 +196,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Prevent scroll bounce on button clicks
     playPauseButton.addEventListener('click', async function(e) {
-        // Prevent default button behavior
         e.preventDefault();
-        // Prevent focus
         e.target.blur();
 
         if (!audioUnlocked) {
@@ -219,6 +220,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 speedSlider.disabled = false;
                 reverbSlider.disabled = false;
                 timeSlider.disabled = false;
+                if (reverseButton) {
+                    reverseButton.disabled = false;
+                }
                 return;
             } catch (err) {
                 console.error('Audio unlock failed:', err);
@@ -226,68 +230,89 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
 
-        // Ensure audio context is created and resumed
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-            await audioCtx.resume();
-        }
-        if (!buffer) {
-            await loadAudio();
+        // Check if we're at the relative end and not playing
+        if (!isPlaying && ((currentTime >= duration && !isReversed) || (currentTime <= 0 && isReversed))) {
+            // Reset to relative beginning before starting
+            currentTime = isReversed ? duration : 0;
+            timeSlider.value = currentTime;
+            updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
         }
 
         if (!isPlaying) {
-            // Start or resume playing
-            if (!source) {
-                source = audioCtx.createBufferSource();
-                source.buffer = buffer;
-
-                // create a dry/wet mix
-                dryGain = audioCtx.createGain();
-                wetGain = audioCtx.createGain();
-
-                // Connect source to both paths
-                source.connect(dryGain);
-                source.connect(convolver);
-                convolver.connect(wetGain);
-
-                // Connect both paths to main gain
-                dryGain.connect(gainNode);
-                wetGain.connect(gainNode);
-
-                gainNode.connect(audioCtx.destination);
-
-                // Set initial mix
-                dryGain.gain.value = 1 - (reverbSlider.value / 100);
-                wetGain.gain.value = reverbSlider.value / 100;
-                source.loop = false;
-                source.playbackRate.value = speedSlider.value / 100;
-                gainNode.gain.value = volumeSlider.value / 100;
-
-                // If we're at the end, start from beginning
-                if (currentTime >= duration) {
-                    currentTime = 0;
-                    pauseTime = 0;
+            // Complete cleanup before starting new playback
+            if (source) {
+                try {
+                    source.stop();
+                } catch (e) {
+                    // Ignore errors if source was already stopped
                 }
-
-                startTime = audioCtx.currentTime - (pauseTime || 0);
-                source.start(0, pauseTime || 0);
-            } else {
-                startTime = audioCtx.currentTime - pauseTime;
+                source.disconnect();
+                source = null;
             }
+            
+            // Ensure all nodes are properly disconnected
+            [dryGain, wetGain, convolver, gainNode].forEach(node => {
+                if (node) {
+                    node.disconnect();
+                }
+            });
+
+            // Create fresh nodes with a small fade-in
+            gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volumeSlider.value / 100, audioCtx.currentTime + 0.005);
+
+            convolver = audioCtx.createConvolver();
+            await createImpulseResponse();
+            
+            dryGain = audioCtx.createGain();
+            wetGain = audioCtx.createGain();
+
+            // Create and configure source
+            source = audioCtx.createBufferSource();
+            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+            
+            // Connect nodes
+            source.connect(dryGain);
+            source.connect(convolver);
+            convolver.connect(wetGain);
+            dryGain.connect(gainNode);
+            wetGain.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // Set parameters
+            dryGain.gain.value = 1 - (reverbSlider.value / 100);
+            wetGain.gain.value = reverbSlider.value / 100;
+            source.playbackRate.value = speedSlider.value / 100;
+
+            // Start playback with precise timing
+            const startOffset = isReversed ? duration - currentTime : currentTime;
+            startTime = audioCtx.currentTime - currentTime;
+            lastFrameTime = audioCtx.currentTime;
+            source.start(audioCtx.currentTime, startOffset);
 
             await audioCtx.resume();
             isPlaying = true;
             playPauseButton.textContent = 'Pause';
             if (stopButton) stopButton.disabled = false;
             
-            // Start the time display update
             requestAnimationFrame(updateTimeDisplay);
         } else {
-            // Pause
+            // Pause with fade-out
+            if (gainNode) {
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.005);
+            }
+            
+            setTimeout(() => {
+                if (source) {
+                    source.stop();
+                    source.disconnect();
+                    source = null;
+                }
+                audioCtx.suspend();
+            }, 10);
+
             pauseTime = audioCtx.currentTime - startTime;
-            await audioCtx.suspend();
             isPlaying = false;
             playPauseButton.textContent = 'Play';
         }
@@ -307,32 +332,29 @@ document.addEventListener('DOMContentLoaded', async function() {
                 playPauseButton.textContent = 'Play';
             }
         } else {
-            // Reset to beginning if already paused
+            // Second stop - reset everything
             if (source) {
                 source.stop();
-                source = null;
+                source.disconnect();  // Disconnect source first
+                if (dryGain) dryGain.disconnect();
+                if (wetGain) wetGain.disconnect();
+                if (convolver) convolver.disconnect();
+                if (gainNode) gainNode.disconnect();
+                source = null;  // Then null the source
             }
-
-            // Reset audio nodes to ensure clean state
-            if (dryGain) {
-                dryGain.disconnect();
-                dryGain = null;
+            
+            // Reset to the appropriate end based on current reverse state
+            if (isReversed) {
+                currentTime = duration;
+                timeSlider.value = duration;
+                updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
+                pauseTime = duration;
+            } else {
+                currentTime = 0;
+                timeSlider.value = 0;
+                updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
+                pauseTime = 0;
             }
-            if (wetGain) {
-                wetGain.disconnect();
-                wetGain = null;
-            }
-            if (convolver) {
-                convolver.disconnect();
-            }
-            if (gainNode) {
-                gainNode.disconnect();
-            }
-
-            pauseTime = 0;
-            currentTime = 0;
-            timeSlider.value = 0;
-            updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
         }
 
         return false;
@@ -527,26 +549,37 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Update times
         currentTime = newTime;
-        startTime = audioCtx.currentTime - (newTime / (speedSlider.value / 100));
-        lastFrameTime = audioCtx.currentTime;
-        
-        // Update slider and car position
         timeSlider.value = newTime;
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
         
-        // Update audio playback position without stopping
         if (isPlaying) {
             if (source) {
                 source.stop();
                 source = audioCtx.createBufferSource();
-                source.buffer = buffer;
+                source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
                 source.playbackRate.value = speedSlider.value / 100;
                 source.connect(dryGain);
                 source.connect(convolver);
-                source.start(0, newTime);
+                
+                // Calculate correct start position based on direction
+                const startPosition = isReversed ? 
+                    duration - newTime : 
+                    newTime;
+                
+                source.start(0, startPosition);
+                startTime = audioCtx.currentTime - newTime;
+                lastFrameTime = audioCtx.currentTime;
             }
         } else {
+            // Update both pauseTime and startTime for correct resumption
             pauseTime = newTime;
+            startTime = audioCtx.currentTime - newTime;
+            
+            // If we have a source, update it for immediate playback on resume
+            if (source) {
+                source.disconnect();
+                source = null;
+            }
         }
     }
 
@@ -590,6 +623,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const sliderWidth = slider.offsetWidth;
         const carWidth = carElement.offsetWidth;
     
+        // Ensure value is within bounds
+        value = Math.max(min, Math.min(max, value));
+        
         // Adjust the available travel distance by subtracting the car width
         const adjustedWidth = sliderWidth - 1.5*carWidth;
     
@@ -702,8 +738,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (source && isPlaying) {
             source.stop();
+            source = audioCtx.createBufferSource();
+            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+            source.playbackRate.value = speedSlider.value / 100;
+            source.connect(dryGain);
+            source.connect(convolver);
+            
+            // Calculate correct start position based on direction
+            const startPosition = isReversed ? 
+                duration - newTime : 
+                newTime;
+            
+            source.start(0, startPosition);
             startTime = audioCtx.currentTime - newTime;
-            createAndStartSource();
         } else {
             pauseTime = newTime;
         }
@@ -711,43 +758,182 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     function updateTimeDisplay() {
         if (source && isPlaying && !pauseTimeUpdate) {
-            const speedPercentage = speedSlider.value;
-            const currentSpeed = speedPercentage / 100;
-
             const now = audioCtx.currentTime;
-            const frameDelta = now - lastFrameTime;
+            const elapsed = now - lastFrameTime;
             lastFrameTime = now;
 
-            currentTime += frameDelta * currentSpeed;
-
-            if (currentTime >= duration) {
-                // Stop playback but maintain position at the end
-                if (source) {
-                    source.stop();
-                    source = null;
+            const speed = speedSlider.value / 100;
+            
+            if (isReversed) {
+                currentTime = Math.max(0, currentTime - (elapsed * speed));
+                if (currentTime <= 0) {
+                    currentTime = 0;
+                    if (source) {
+                        source.stop();
+                        source = null;
+                    }
+                    isPlaying = false;
+                    playPauseButton.textContent = 'Play';
+                    timeSlider.value = 0;
+                    updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
                 }
-                isPlaying = false;
-                playPauseButton.textContent = 'Play';
-                currentTime = duration; // Ensure we stay at the end
-                timeSlider.value = duration;
-                updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
-                
-                // Optionally disconnect nodes to save resources
-                if (dryGain) dryGain.disconnect();
-                if (wetGain) wetGain.disconnect();
-                if (convolver) convolver.disconnect();
-                if (gainNode) gainNode.disconnect();
-                
-                // Store the end position for future reference
-                pauseTime = duration;
-                return; // Stop the animation frame loop
+            } else {
+                currentTime = Math.min(duration, currentTime + (elapsed * speed));
+                if (currentTime >= duration) {
+                    currentTime = duration;
+                    if (source) {
+                        source.stop();
+                        source = null;
+                    }
+                    isPlaying = false;
+                    playPauseButton.textContent = 'Play';
+                    timeSlider.value = duration;
+                    updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
+                }
             }
 
             timeSlider.value = currentTime;
             updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
 
-            requestAnimationFrame(updateTimeDisplay);
+            if (isPlaying) {
+                requestAnimationFrame(updateTimeDisplay);
+            }
         }
+    }
+
+    // Add this helper function
+    function stopPlayback() {
+        if (source) {
+            source.stop();
+            source = null;
+        }
+        isPlaying = false;
+        playPauseButton.textContent = 'Play';
+        
+        // Disconnect nodes
+        if (dryGain) dryGain.disconnect();
+        if (wetGain) wetGain.disconnect();
+        if (convolver) convolver.disconnect();
+        if (gainNode) gainNode.disconnect();
+        
+        // Reset to start if we reached the end (but not if we're in reverse and reached the start)
+        if (!isReversed && currentTime >= duration) {
+            currentTime = 0;
+            timeSlider.value = 0;
+            updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
+        }
+        
+        pauseTime = currentTime;
+    }
+
+    // Add this helper function to reverse the audio buffer
+    function reverseBuffer(buffer) {
+        const channels = buffer.numberOfChannels;
+        // Create a new buffer with same properties
+        const reversedBuffer = audioCtx.createBuffer(
+            channels,
+            buffer.length,
+            buffer.sampleRate
+        );
+        
+        // Reverse the data of each channel
+        for (let channel = 0; channel < channels; channel++) {
+            const channelData = buffer.getChannelData(channel);
+            const reversedData = reversedBuffer.getChannelData(channel);
+            for (let i = 0; i < channelData.length; i++) {
+                reversedData[i] = channelData[channelData.length - 1 - i];
+            }
+        }
+        return reversedBuffer;
+    }
+
+    // Fix the reverse button handler
+    reverseButton.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.target.blur();
+        
+        isReversed = !isReversed;
+        reverseButton.textContent = isReversed ? 'Forwards' : 'Backwards';
+        reverseButton.style.transform = isReversed ? 'none' : 'scaleX(-1)';
+        purpleCar.classList.toggle('reversed', isReversed);
+        
+        if (isPlaying) {
+            const currentPosition = currentTime;
+            
+            if (source) {
+                source.stop();
+                source = null;
+            }
+            
+            source = audioCtx.createBufferSource();
+            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+            source.playbackRate.value = speedSlider.value / 100;
+            
+            source.connect(dryGain);
+            source.connect(convolver);
+            
+            const startPosition = isReversed ? duration - currentPosition : currentPosition;
+            source.start(0, startPosition);
+            
+            startTime = audioCtx.currentTime - currentPosition;
+            lastFrameTime = audioCtx.currentTime;
+            
+            requestAnimationFrame(updateTimeDisplay);
+        } else {
+            // Force source recreation on next play
+            if (source) {
+                source.disconnect();
+                source = null;
+            }
+            
+            const currentPosition = currentTime;
+            pauseTime = currentPosition;
+            timeSlider.value = currentPosition;
+            updateCarPosition(currentPosition, purpleCar, timeRange.min, timeRange.max);
+            
+            if ((isReversed && currentPosition <= 0) || (!isReversed && currentPosition >= duration)) {
+                currentTime = isReversed ? duration : 0;
+                pauseTime = currentTime;
+                timeSlider.value = currentTime;
+                updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
+            }
+        }
+    });
+
+    // Add this CSS to fix the button click issue
+    reverseButton.style.position = 'relative';
+    reverseButton.style.zIndex = '1000';
+
+    function cleanupAudioNodes() {
+        // Stop and disconnect source if it exists
+        if (source) {
+            source.stop();
+            source.disconnect();
+            source = null;
+        }
+        
+        // Disconnect all effect/routing nodes
+        if (dryGain) {
+            dryGain.disconnect();
+            dryGain = null;
+        }
+        if (wetGain) {
+            wetGain.disconnect();
+            wetGain = null;
+        }
+        if (convolver) {
+            convolver.disconnect();
+            convolver = null;
+        }
+        if (gainNode) {
+            gainNode.disconnect();
+            gainNode = null;
+        }
+        
+        // Recreate the permanent nodes
+        gainNode = audioCtx.createGain();
+        convolver = audioCtx.createConvolver();
+        createImpulseResponse(); // Recreate the impulse response
     }
 });
 
