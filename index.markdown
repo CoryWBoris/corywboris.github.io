@@ -7,7 +7,6 @@ permalink: /
     <div class="stars"></div>
     <div class="twinkling"></div>
 </div>
-<meta name="mobile-web-app-capable" content="yes">
 <div class="bg">
     <div class="content">
         <h1>Welcome to my site!</h1>
