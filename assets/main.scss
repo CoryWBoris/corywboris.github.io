@@ -562,3 +562,42 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
 }
+/* Add these styles for the glowing car effects */
+.car, .red-car, .green-car, .purple-car {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85));
+    transition: filter 0.3s ease;
+}
+
+/* Custom glow colors for each car */
+.car {
+    filter: drop-shadow(0 0 2px rgba(0, 191, 255, 0.85)); /* Blue glow */
+}
+
+.red-car {
+    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.85)); /* Red glow */
+}
+
+.green-car {
+    filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.85)); /* Green glow */
+}
+
+.purple-car {
+    filter: drop-shadow(0 0 2px rgba(147, 51, 234, 0.85)); /* Purple glow */
+}
+
+/* Hover states with sharper glow */
+.car:hover {
+    filter: drop-shadow(0 0 3px rgba(0, 191, 255, 0.95));
+}
+
+.red-car:hover {
+    filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.95));
+}
+
+.green-car:hover {
+    filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.95));
+}
+
+.purple-car:hover {
+    filter: drop-shadow(0 0 3px rgba(147, 51, 234, 0.95));
+} 
