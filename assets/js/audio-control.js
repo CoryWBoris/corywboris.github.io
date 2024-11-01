@@ -906,6 +906,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         reverseButton.style.transform = isReversed ? 'none' : 'scaleX(-1)';
         purpleCar.classList.toggle('reversed', isReversed);
         
+        // Remove any auto-jumping logic and just maintain current position
         if (isPlaying) {
             const currentPosition = currentTime;
             
@@ -935,17 +936,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 source = null;
             }
             
+            // Simply maintain current position without any jumping
             const currentPosition = currentTime;
             pauseTime = currentPosition;
             timeSlider.value = currentPosition;
             updateCarPosition(currentPosition, purpleCar, timeRange.min, timeRange.max);
-            
-            if ((isReversed && currentPosition <= 0) || (!isReversed && currentPosition >= duration)) {
-                currentTime = isReversed ? duration : 0;
-                pauseTime = currentTime;
-                timeSlider.value = currentTime;
-                updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
-            }
         }
     });
 
