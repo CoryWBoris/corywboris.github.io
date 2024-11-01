@@ -1151,6 +1151,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Observe the container that holds the sliders
     resizeObserver.observe(document.querySelector('.audio-container'));
 
+    // Add this function to handle landscape scrolling
+    function handleOrientationScroll() {
+        if (window.matchMedia("(orientation: landscape)").matches) {
+            const controlContainer = document.querySelector('.control-container');
+            if (controlContainer) {
+                // Get the position of the control container
+                const rect = controlContainer.getBoundingClientRect();
+                const scrollPosition = window.pageYOffset + rect.top - 5;  // 20px gap above buttons
+                
+                // Scroll to position with the gap
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }
+
+    // Call it when orientation changes
+    window.addEventListener('orientationchange', () => {
+        // Small delay to ensure DOM has updated
+        setTimeout(handleOrientationScroll, 100);
+    });
+
+    // Also call it on initial load if we're already in landscape
+    document.addEventListener('DOMContentLoaded', () => {
+        handleOrientationScroll();
+    });
+
 });
 
 
