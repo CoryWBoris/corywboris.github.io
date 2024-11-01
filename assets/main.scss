@@ -1116,3 +1116,54 @@ body {
         }
     }
 }
+
+// ------------------------------------------------------------------------------------------- //
+// Landscape Orientation Styles
+// ------------------------------------------------------------------------------------------- //
+
+@media (orientation: landscape) {
+    html {
+        overflow-x: hidden;
+    }
+    
+    body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .audio-container {
+        max-width: 90%;
+        margin: 0 auto;
+        padding-bottom: 120px;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
+    .control-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 0 20px;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+
+        > button {
+            flex: 1;
+            min-width: 150px;
+        }
+    }
+
+    // Keep your existing car styles
+    .car, .red-car, .green-car, .purple-car {
+        transform: scale(1.7) !important;
+        -webkit-transform: scale(1.7) !important;
+        
+        &.reversed {
+            transform: scale(1.7) scaleX(-1) !important;
+            -webkit-transform: scale(1.7) scaleX(-1) !important;
+        }
+    }
+}
