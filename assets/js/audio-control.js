@@ -420,14 +420,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
             source.playbackRate.value = currentSpeed;
             
-            // Reconnect all nodes
             source.connect(dryGain);
             source.connect(convolver);
             
-            // Start at the new time
-            source.start(0, newTime);
+            // Fix: Use the same position calculation as the reverse button
+            const startPosition = isReversed ? duration - newTime : newTime;
+            source.start(0, startPosition);
             
-            // Request next animation frame
             requestAnimationFrame(updateTimeDisplay);
         } else {
             pauseTime = newTime;
