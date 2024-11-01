@@ -1122,6 +1122,35 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.removeEventListener('touchcancel', handleTouchEndReverb);
     }
 
+    // Add this function to handle orientation/resize changes
+    function reinitializeCarPositions() {
+        // Small delay to ensure new dimensions are calculated
+        setTimeout(() => {
+            updateCarPosition(volumeSlider.value, car, volumeRange.min, volumeRange.max);
+            updateCarPosition(speedSlider.value, redCar, speedRange.min, speedRange.max);
+            updateCarPosition(reverbSlider.value, greenCar, reverbRange.min, reverbRange.max);
+            updateCarPosition(timeSlider.value, purpleCar, timeRange.min, timeRange.max);
+        }, 100);
+    }
+
+    // Listen for orientation changes
+    window.addEventListener('orientationchange', reinitializeCarPositions);
+
+    // Also use ResizeObserver as a fallback for devices that don't support orientationchange
+    const resizeObserver = new ResizeObserver((entries) => {
+        const oldWidth = entries[0].target.clientWidth;
+        // Wait for next frame to check if width actually changed
+        requestAnimationFrame(() => {
+            const newWidth = entries[0].target.clientWidth;
+            if (oldWidth !== newWidth) {
+                reinitializeCarPositions();
+            }
+        });
+    });
+
+    // Observe the container that holds the sliders
+    resizeObserver.observe(document.querySelector('.audio-container'));
+
 });
 
 

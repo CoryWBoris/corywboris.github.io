@@ -154,7 +154,7 @@ body {
 // Button styles
 #playPauseButton, #stopButton, #reverseButton {
     font-size: 2em;
-    padding: 10px 20px;
+    padding: 5px 15px;
     color: white;
     border: none;
     border-radius: 5px;
@@ -162,6 +162,11 @@ body {
     margin-bottom: 20px;
     text-align: center;
     width: 100%;
+    height: 60px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.4));
     transition: filter 0.3s ease, background-color 0.3s ease;
 }
@@ -797,5 +802,53 @@ body {
             height: 76px;
             opacity: 0;
         }
+    }
+
+    // Keep the container width controlled but spacing identical
+    .audio-container {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+
+    .road {
+        margin-top: 20px;  // Exact same margin as portrait
+        height: 10px;      // Exact same height
+    }
+
+    .volume-slider-container,
+    .speed-slider-container,
+    .reverb-slider-container,
+    .time-slider-container {
+        width: 90%;        // Adjusted for landscape but keeping proportions
+        margin: 0 auto;    // Center alignment
+        position: relative;
+    }
+
+    .car, .red-car, .green-car, .purple-car {
+        top: -13px;        // Exact same top offset as portrait
+        transform: scale(1.7) !important;  // Only scale adjustment for landscape
+        
+        &.reversed {
+            transform: scale(1.7) scaleX(-1) !important;
+        }
+    }
+}
+
+// Add this new section for landscape-specific button handling
+@media (orientation: landscape) {
+    // Container for all buttons
+    .control-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;  // Center the buttons
+        gap: 10px;  // Reduce gap between buttons (from 20px)
+        width: 100%;
+        padding: 0 20px;  // Add some padding on the sides
+    }
+
+    // Make buttons longer
+    .control-container > button {
+        flex: 1;  // Allow buttons to grow
+        min-width: 150px;  // Increase minimum width
     }
 }

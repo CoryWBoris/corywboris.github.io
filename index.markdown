@@ -16,11 +16,9 @@ permalink: /
     </div>
     <div class="audio-container">
         <div class="control-container">
-            <div class="button-container">
             <button id="playPauseButton">Play</button>
-                <button id="stopButton">Stop</button>
-                <button id="reverseButton" style="transform: scaleX(-1)">Backwards</button>
-            </div>
+            <button id="stopButton">Stop</button>
+            <button id="reverseButton" style="transform: scaleX(-1)">Backwards</button>
         </div>
         <!-- <audio id="audioPlayer" src="{{ site.baseurl }}/assets/audio/sunsetBoulevard.mp3"></audio> -->
         <div class="time-slider-container">
