@@ -704,26 +704,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     function handleTouchMoveVolume(event) {
         if (!isDraggingVolume) return;
         event.preventDefault();
-
+        
         const touch = event.touches[0];
         const sliderRect = volumeSlider.getBoundingClientRect();
         const carRect = car.getBoundingClientRect();
-
-        // Calculate position based on car center rather than edge
+        
         let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
         newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
-
-        // Update car position
-        car.style.left = `${newLeft}px`;
 
         // Update slider value
         const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
         volumeSlider.value = percentage;
-        
+
+        // Update car position
+        updateCarPosition(percentage, car, volumeRange.min, volumeRange.max);
+
+        // Update audio
         if (gainNode) {
             gainNode.gain.value = percentage / 100;
         }
     }
+
     function handleTouchMoveSpeed(event) {
         if (!isDraggingSpeed) return;
         event.preventDefault();
@@ -731,22 +732,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         const touch = event.touches[0];
         const sliderRect = speedSlider.getBoundingClientRect();
         const carRect = redCar.getBoundingClientRect();
-
+        
         let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
         newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
 
-        // Update car position
-        redCar.style.left = `${newLeft}px`;
-
         // Update slider value
-        const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
+        const percentage = (newLeft / (sliderRect.width - carRect.width)) * 
+                          (speedRange.max - speedRange.min) + speedRange.min;
         speedSlider.value = percentage;
 
+        // Update car position
+        updateCarPosition(percentage, redCar, speedRange.min, speedRange.max);
+
+        // Update playback speed
         if (source) {
             source.playbackRate.value = percentage / 100;
         }
     }
-    
+
     function handleTouchMoveReverb(event) {
         if (!isDraggingReverb) return;
         event.preventDefault();
@@ -758,20 +761,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         let newLeft = touch.clientX - sliderRect.left - (carRect.width / 2);
         newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
 
-        // Update car position
-        greenCar.style.left = `${newLeft}px`;
-
         // Update slider value
         const percentage = (newLeft / (sliderRect.width - carRect.width)) * 100;
         reverbSlider.value = percentage;
 
-        if (dryGain && wetGain) {  // Changed from convolver
-            const wetAmount = percentage / 100;
-            wetGain.gain.value = wetAmount;
-            dryGain.gain.value = 1 - wetAmount;
+        // Update car position
+        updateCarPosition(percentage, greenCar, reverbRange.min, reverbRange.max);
+
+        // Update reverb
+        if (wetGain && dryGain) {
+            wetGain.gain.value = percentage / 100;
+            dryGain.gain.value = 1 - (percentage / 100);
         }
     }
-    
+
     function handleTouchMoveTime(event) {
         if (!isDraggingTime) return;
         event.preventDefault();
@@ -786,13 +789,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         const percentage = newLeft / (sliderRect.width - carRect.width);
         const newTime = percentage * duration;
 
-        // Only update position and time values
+        // Update times
         currentTime = newTime;
         timeSlider.value = newTime;
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
+        document.querySelector('.time-label').textContent = formatTime(newTime);
 
-        // Pause audio updates during drag
-        pauseTimeUpdate = true;
+        // Don't pause time updates while dragging if playing
+        if (isPlaying) {
+            startTime = audioCtx.currentTime - newTime;
+            lastFrameTime = audioCtx.currentTime;
+        }
     }
 
     function handleTouchEndTime() {
@@ -807,6 +814,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.removeEventListener('touchcancel', handleTouchEndTime);
         
         if (isPlaying) {
+            // Update the playback position
+            startTime = audioCtx.currentTime - currentTime;
+            
+            // Restart the source from the new position
             if (source) {
                 source.stop();
                 source = audioCtx.createBufferSource();
@@ -817,9 +828,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 const startPosition = isReversed ? duration - currentTime : currentTime;
                 source.start(0, startPosition);
-                startTime = audioCtx.currentTime - currentTime;
-                lastFrameTime = audioCtx.currentTime;
             }
+            
+            // Resume animation
             requestAnimationFrame(updateTimeDisplay);
         }
     }
@@ -830,6 +841,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
         document.addEventListener('touchend', handleTouchEndTime);
         document.addEventListener('touchcancel', handleTouchEndTime);
+        
+        // Add continuous time updates like in mousedown
+        timeUpdateInterval = setInterval(() => {
+            if (isDraggingTime) {
+                document.querySelector('.time-label').textContent = formatTime(currentTime);
+            }
+        }, 16); // approximately 60fps
+        
         event.preventDefault();
     });
 
@@ -943,7 +962,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         reverseButton.style.transform = isReversed ? 'none' : 'scaleX(-1)';
         purpleCar.classList.toggle('reversed', isReversed);
         
-        // Remove any auto-jumping logic and just maintain current position
+        // Reset drag-related states
+        isDraggingTime = false;
+        pauseTimeUpdate = false;
+        if (timeUpdateInterval) {
+            clearInterval(timeUpdateInterval);
+            timeUpdateInterval = null;
+        }
+        
         if (isPlaying) {
             const currentPosition = currentTime;
             
@@ -1048,6 +1074,54 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('touchcancel', handleTouchEndTime);
         event.preventDefault();
     });
+
+    // Add this to your existing JS
+    // Add these alongside your existing event listeners
+    car.addEventListener('touchstart', function(event) {
+        isDraggingVolume = true;
+        document.addEventListener('touchmove', handleTouchMoveVolume, { passive: false });
+        document.addEventListener('touchend', handleTouchEndVolume);
+        document.addEventListener('touchcancel', handleTouchEndVolume);
+        event.preventDefault();
+    });
+
+    redCar.addEventListener('touchstart', function(event) {
+        isDraggingSpeed = true;
+        document.addEventListener('touchmove', handleTouchMoveSpeed, { passive: false });
+        document.addEventListener('touchend', handleTouchEndSpeed);
+        document.addEventListener('touchcancel', handleTouchEndSpeed);
+        event.preventDefault();
+    });
+
+    greenCar.addEventListener('touchstart', function(event) {
+        isDraggingReverb = true;
+        document.addEventListener('touchmove', handleTouchMoveReverb, { passive: false });
+        document.addEventListener('touchend', handleTouchEndReverb);
+        document.addEventListener('touchcancel', handleTouchEndReverb);
+        event.preventDefault();
+    });
+
+    function handleTouchEndVolume() {
+        isDraggingVolume = false;
+        document.removeEventListener('touchmove', handleTouchMoveVolume);
+        document.removeEventListener('touchend', handleTouchEndVolume);
+        document.removeEventListener('touchcancel', handleTouchEndVolume);
+    }
+
+    function handleTouchEndSpeed() {
+        isDraggingSpeed = false;
+        document.removeEventListener('touchmove', handleTouchMoveSpeed);
+        document.removeEventListener('touchend', handleTouchEndSpeed);
+        document.removeEventListener('touchcancel', handleTouchEndSpeed);
+    }
+
+    function handleTouchEndReverb() {
+        isDraggingReverb = false;
+        document.removeEventListener('touchmove', handleTouchMoveReverb);
+        document.removeEventListener('touchend', handleTouchEndReverb);
+        document.removeEventListener('touchcancel', handleTouchEndReverb);
+    }
+
 });
 
 

@@ -365,7 +365,7 @@ body {
 }
 
 // Mobile-specific styles
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .content {
         text-align: center;
     }
@@ -739,4 +739,63 @@ body {
     #playPauseButton:hover { background-color: #007bff; }
     #stopButton:hover { background-color: #ff0080; }
     #reverseButton:hover { background-color: #00d9ff; }
+}
+
+@media (max-width: 600px) and (orientation: landscape) {
+    .site-footer {
+        .social-media-list,
+        .horizontal-list {
+            gap: 15px;  // Reduce gap in landscape
+            margin: 10px 0;
+        }
+
+        .svg-icon {
+            width: 40px;  // Make icons smaller
+            height: 40px;
+        }
+    }
+}
+
+// Add this new section for landscape-specific car handling
+@media (orientation: landscape) {
+    // Only visual adjustments for landscape
+    .car, .red-car, .green-car, .purple-car {
+        transform: scale(1.7) !important;
+        
+        &.reversed {
+            transform: scale(1.7) scaleX(-1) !important;
+        }
+    }
+
+    // Keep slider containers simple
+    .volume-slider-container,
+    .speed-slider-container,
+    .reverb-slider-container,
+    .time-slider-container {
+        width: 90%;
+        margin: 30px auto;
+        position: relative;
+    }
+
+    // Keep sliders working normally
+    #volumeSlider,
+    #speedSlider,
+    #reverbSlider,
+    #timeSlider {
+        -webkit-appearance: none;
+        width: 100%;
+        
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 76px;
+            height: 76px;
+            opacity: 0;
+        }
+        
+        &::-moz-range-thumb {
+            width: 76px;
+            height: 76px;
+            opacity: 0;
+        }
+    }
 }
