@@ -411,25 +411,34 @@ document.addEventListener('DOMContentLoaded', async function() {
         startTime = audioCtx.currentTime - (newTime / (speedSlider.value / 100));
         lastFrameTime = audioCtx.currentTime;
         
+        // Keep visual updates
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
+        document.querySelector('.time-label').textContent = formatTime(newTime);
         
         if (source && isPlaying) {
-            const currentSpeed = speedSlider.value / 100;
+            // Just stop the source during scrubbing
             source.stop();
+            source = null;
+        }
+        
+        pauseTime = newTime;
+    });
+
+    // Add this to resume playback when scrubbing ends
+    timeSlider.addEventListener('change', function(event) {
+        if (isPlaying) {
+            const newTime = parseFloat(event.target.value);
             source = audioCtx.createBufferSource();
             source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
-            source.playbackRate.value = currentSpeed;
+            source.playbackRate.value = speedSlider.value / 100;
             
             source.connect(dryGain);
             source.connect(convolver);
             
-            // Fix: Use the same position calculation as the reverse button
             const startPosition = isReversed ? duration - newTime : newTime;
             source.start(0, startPosition);
             
             requestAnimationFrame(updateTimeDisplay);
-        } else {
-            pauseTime = newTime;
         }
     });
 
