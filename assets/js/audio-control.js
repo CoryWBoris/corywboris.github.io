@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     const initialTime = 0;
     const timeRange = { min: 0, max: 100 };
 
+    let timeUpdateInterval;
+
     
     // Add SVG loading verification at the start
     function waitForSVGs() {
@@ -467,6 +469,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('mousemove', onMouseMoveTime);
         document.addEventListener('mouseup', onMouseUpTime);
         document.addEventListener('selectstart', preventSelection);
+        
+        // Start continuous time updates
+        timeUpdateInterval = setInterval(() => {
+            if (isDraggingTime) {
+                document.querySelector('.time-label').textContent = formatTime(currentTime);
+            }
+        }, 16); // approximately 60fps
+        
         event.preventDefault();
     });
     
@@ -547,11 +557,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const sliderRect = timeSlider.getBoundingClientRect();
         const carRect = purpleCar.getBoundingClientRect();
         
-        // Calculate new position within bounds
         let newLeft = event.clientX - sliderRect.left - (carRect.width / 2);
         newLeft = Math.max(0, Math.min(newLeft, sliderRect.width - carRect.width));
         
-        // Calculate time based on position relative to total duration
         const percentage = newLeft / (sliderRect.width - carRect.width);
         const newTime = percentage * duration;
         
@@ -560,34 +568,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         timeSlider.value = newTime;
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
         
-        if (isPlaying) {
-            if (source) {
-                source.stop();
-                source = audioCtx.createBufferSource();
-                source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
-                source.playbackRate.value = speedSlider.value / 100;
-                source.connect(dryGain);
-                source.connect(convolver);
-                
-                // Calculate correct start position based on direction
-                const startPosition = isReversed ? 
-                    duration - newTime : 
-                    newTime;
-                
-                source.start(0, startPosition);
-                startTime = audioCtx.currentTime - newTime;
-                lastFrameTime = audioCtx.currentTime;
-            }
-        } else {
-            // Update both pauseTime and startTime for correct resumption
-            pauseTime = newTime;
-            startTime = audioCtx.currentTime - newTime;
-            
-            // If we have a source, update it for immediate playback on resume
-            if (source) {
-                source.disconnect();
-                source = null;
-            }
+        // Update time label continuously
+        document.querySelector('.time-label').textContent = formatTime(newTime);
+        
+        // Stop audio completely during scrubbing
+        if (source) {
+            source.stop();
+            source.disconnect();
+            source = null;
         }
     }
 
@@ -613,17 +601,37 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function onMouseUpTime() {
-        isDraggingTime = false;
-        lastFrameTime = audioCtx.currentTime;
+        if (!isDraggingTime) return;
         
-        // Immediately request a new animation frame to continue movement
-        if (isPlaying) {
-            requestAnimationFrame(updateTimeDisplay);
+        // Immediately clear flags and intervals
+        isDraggingTime = false;
+        if (timeUpdateInterval) {
+            clearInterval(timeUpdateInterval);
+            timeUpdateInterval = null;
         }
         
+        // Immediately remove event listeners
         document.removeEventListener('mousemove', onMouseMoveTime);
         document.removeEventListener('mouseup', onMouseUpTime);
         document.removeEventListener('selectstart', preventSelection);
+        
+        // Only handle audio if we were playing
+        if (isPlaying) {
+            lastFrameTime = audioCtx.currentTime;
+            startTime = audioCtx.currentTime - currentTime;
+            
+            // Create and start new source in one go
+            source = audioCtx.createBufferSource();
+            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+            source.playbackRate.value = speedSlider.value / 100;
+            source.connect(dryGain);
+            source.connect(convolver);
+            
+            const startPosition = isReversed ? duration - currentTime : currentTime;
+            source.start(0, startPosition);
+            
+            requestAnimationFrame(updateTimeDisplay);
+        }
     }
 
     function updateCarPosition(value, carElement, min, max) {
