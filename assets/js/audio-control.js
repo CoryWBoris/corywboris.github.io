@@ -386,11 +386,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                 timeSlider.value = duration;
                 updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
                 pauseTime = duration;
+                document.querySelector('.time-label').textContent = formatTime(duration);
             } else {
                 currentTime = 0;
                 timeSlider.value = 0;
                 updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
                 pauseTime = 0;
+                document.querySelector('.time-label').textContent = '0:00';
             }
         }
 
