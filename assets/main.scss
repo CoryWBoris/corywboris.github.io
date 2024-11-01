@@ -671,20 +671,35 @@ body {
 
 /* Separate hover effects for desktop only */
 @media (hover: hover) {
-    .car:hover {
-        filter: drop-shadow(0 0 3px rgba(0, 191, 255, 0.95));
+    #playPauseButton:hover { 
+        background-color: #007bf0; 
+        filter: drop-shadow(0 0 4px rgba(0, 123, 255, 0.95));
     }
 
-    .red-car:hover {
-        filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.95));
+    #stopButton:hover { 
+        background-color: #ff0400; 
+        filter: drop-shadow(0 0 4px rgba(255, 0, 128, 0.95));
     }
 
-    .green-car:hover {
-        filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.95));
+    #reverseButton:hover { 
+        background-color: #00d9ff; 
+        filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.95));
     }
 
-    .purple-car:hover {
-        filter: drop-shadow(0 0 3px rgba(147, 51, 234, 0.95));
+    .social-media-list {
+        .svg-icon:hover {
+            transform: scale(1.2);
+        }
+
+        &:hover {
+            .svg-icon {
+                filter: blur(2px);
+
+                &:hover {
+                    filter: none;
+                }
+            }
+        }
     }
 }
 
@@ -703,4 +718,25 @@ body {
         box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
         filter: brightness(1.2);
     }
-} 
+}
+
+/* Disable hover effects on mobile while keeping interactions */
+@media (max-width: 600px) {
+    #playPauseButton:hover,
+    #stopButton:hover,
+    #reverseButton:hover,
+    .social-media-list .svg-icon:hover,
+    .social-media-list:hover .svg-icon,
+    .car:hover,
+    .red-car:hover,
+    .green-car:hover,
+    .purple-car:hover {
+        filter: none;
+        transform: none;
+    }
+
+    /* Preserve original button colors */
+    #playPauseButton:hover { background-color: #007bff; }
+    #stopButton:hover { background-color: #ff0080; }
+    #reverseButton:hover { background-color: #00d9ff; }
+}
