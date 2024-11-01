@@ -1158,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (controlContainer) {
                 // Get the position of the control container
                 const rect = controlContainer.getBoundingClientRect();
-                const scrollPosition = window.pageYOffset + rect.top - 5;  // 20px gap above buttons
+                const scrollPosition = window.pageYOffset + rect.top - 20;  // 20px gap above buttons
                 
                 // Scroll to position with the gap
                 window.scrollTo({
