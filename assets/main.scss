@@ -169,9 +169,62 @@ body {
 #playPauseButton {
     background-color: #007bff;
     filter: drop-shadow(0 0 1px rgba(0, 208, 255, 0.4));
+    position: relative;
+    text-align: center;
+    min-width: 120px;
+    
     &:hover { 
         background-color: #007bf0; 
         filter: drop-shadow(0 0 4px rgba(0, 123, 255, 0.95));
+    }
+    
+    &.enabling {
+        background-color: #088F8F !important;
+        pointer-events: none;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        animation: glow 1.5s infinite ease-in-out;
+        
+        // Clear any existing content
+        > *:not(.wave-text) {
+            display: none;
+        }
+        
+        .wave-text {
+            display: inline-flex;
+            justify-content: center;
+            width: 100%;
+            color: white;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            
+            span {
+                display: inline-block;
+                animation: wave 1.5s infinite ease-in-out;
+                transform-origin: 50% 100%;
+                
+                @for $i from 1 through 14 {
+                    &:nth-child(#{$i}) {
+                        animation-delay: #{($i - 1) * 0.1}s;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes swellText {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
     }
 }
 
@@ -632,5 +685,22 @@ body {
 
     .purple-car:hover {
         filter: drop-shadow(0 0 3px rgba(147, 51, 234, 0.95));
+    }
+}
+
+@keyframes wave {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% { 
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        filter: brightness(1);
+    }
+    50% { 
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        filter: brightness(1.2);
     }
 } 

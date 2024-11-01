@@ -41,7 +41,32 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     let timeUpdateInterval;
 
-    
+    // Add wave animation handler
+    playPauseButton.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.target.blur();
+
+        if (!audioUnlocked) {
+            playPauseButton.innerHTML = '';
+            
+            const waveText = document.createElement('div');
+            waveText.className = 'wave-text';
+            
+            'Enabling Audio'.split('').forEach(letter => {
+                const span = document.createElement('span');
+                span.textContent = letter === ' ' ? '\u00A0' : letter;
+                waveText.appendChild(span);
+            });
+            
+            playPauseButton.appendChild(waveText);
+            
+            // Wait for the first animation to start before adding the enabling class
+            waveText.firstChild.addEventListener('animationstart', () => {
+                playPauseButton.classList.add('enabling');
+            }, { once: true });
+        }
+    });
+
     // Add SVG loading verification at the start
     function waitForSVGs() {
         return new Promise((resolve, reject) => {
@@ -202,29 +227,39 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.target.blur();
 
         if (!audioUnlocked) {
+            // Start enabling animation
+            playPauseButton.classList.add('enabling');
+            
             try {
+                // Wait for audio initialization
                 await unlockAudio.play();
                 unlockAudio.pause();
                 unlockAudio.currentTime = 0;
                 audioUnlocked = true;
 
-                // Only initialize Web Audio API after proper unlock
+                // Initialize Web Audio API
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 gainNode = audioCtx.createGain();
                 convolver = audioCtx.createConvolver();
                 await createImpulseResponse();
                 await loadAudio();
 
-                // Enable all controls only after proper unlock
-                playPauseButton.textContent = 'Play';
-                stopButton.disabled = false;
-                volumeSlider.disabled = false;
-                speedSlider.disabled = false;
-                reverbSlider.disabled = false;
-                timeSlider.disabled = false;
-                if (reverseButton) {
-                    reverseButton.disabled = false;
-                }
+                // Let the loading animation play for a moment before changing state
+                setTimeout(() => {
+                    playPauseButton.classList.remove('enabling');
+                    playPauseButton.innerHTML = 'Play';
+                    
+                    // Enable all controls
+                    stopButton.disabled = false;
+                    volumeSlider.disabled = false;
+                    speedSlider.disabled = false;
+                    reverbSlider.disabled = false;
+                    timeSlider.disabled = false;
+                    if (reverseButton) {
+                        reverseButton.disabled = false;
+                    }
+                }, 2000);
+
                 return;
             } catch (err) {
                 console.error('Audio unlock failed:', err);
