@@ -545,3 +545,20 @@ body {
 //     align-items: center;
 //     justify-content: center;
 // }
+
+// Add this with your other car-related styles
+.time-label {
+    position: absolute;
+    top: -6px;
+    left: 40%;
+    transform: translateX(-50%);
+    color: #800080;
+    font-size: 8px;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}

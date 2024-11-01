@@ -780,6 +780,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         event.preventDefault();
     });
 
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
     function updateTimeDisplay() {
         if (source && isPlaying && !pauseTimeUpdate) {
             const now = audioCtx.currentTime;
@@ -800,6 +806,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     playPauseButton.textContent = 'Play';
                     timeSlider.value = 0;
                     updateCarPosition(0, purpleCar, timeRange.min, timeRange.max);
+                    document.querySelector('.time-label').textContent = '0:00';
                 }
             } else {
                 currentTime = Math.min(duration, currentTime + (elapsed * speed));
@@ -813,11 +820,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                     playPauseButton.textContent = 'Play';
                     timeSlider.value = duration;
                     updateCarPosition(duration, purpleCar, timeRange.min, timeRange.max);
+                    document.querySelector('.time-label').textContent = formatTime(duration);
                 }
             }
 
             timeSlider.value = currentTime;
             updateCarPosition(currentTime, purpleCar, timeRange.min, timeRange.max);
+            document.querySelector('.time-label').textContent = formatTime(currentTime);
 
             if (isPlaying) {
                 requestAnimationFrame(updateTimeDisplay);
