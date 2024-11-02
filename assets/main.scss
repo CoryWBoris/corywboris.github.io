@@ -1251,7 +1251,22 @@ body {
 
 @media (orientation: portrait) {
     .control-container {
-        gap: 0px !important;
+        display: flex;
+        flex-direction: column;
+        gap: 3px !important;
+        padding: 0 !important;
+        padding-bottom: 18px !important;
+        
+        > button {
+            margin: 2px 0 !important;  // Tiny margin between buttons
+            flex-grow: 0 !important;   // Prevent growing
+            flex-shrink: 0 !important; // Prevent shrinking
+            height: 60px !important;   // Fixed height
+        }
+    }
+
+    .audio-container {
+        padding-bottom: 80px !important; // Adjust bottom padding if needed
     }
 }
 @media (min-width: 601px) and (orientation: landscape) {
