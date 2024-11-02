@@ -1254,3 +1254,12 @@ body {
         gap: 0px !important;
     }
 }
+@media (min-width: 601px) and (orientation: landscape) {
+.content {
+    padding: 20px 0 !important;
+}
+.social-media-list.horizontal-list .svg-icon {
+    padding: 20px;
+
+}
+}
