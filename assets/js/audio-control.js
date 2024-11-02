@@ -482,37 +482,52 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     car.addEventListener('mousedown', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingVolume = true;
         document.addEventListener('mousemove', onMouseMoveVolume);
         document.addEventListener('mouseup', onMouseUpVolume);
-        document.addEventListener('selectstart', preventSelection); // Prevent text selection
+        document.addEventListener('selectstart', preventSelection);
     });
 
     redCar.addEventListener('mousedown', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingSpeed = true;
         document.addEventListener('mousemove', onMouseMoveSpeed);
         document.addEventListener('mouseup', onMouseUpSpeed);
-        document.addEventListener('selectstart', preventSelection); // Prevent text selection
+        document.addEventListener('selectstart', preventSelection);
     });
 
     greenCar.addEventListener('mousedown', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingReverb = true;
         document.addEventListener('mousemove', onMouseMoveReverb);
         document.addEventListener('mouseup', onMouseUpReverb);
-        document.addEventListener('selectstart', preventSelection); // Prevent text selection
+        document.addEventListener('selectstart', preventSelection);
     });
     purpleCar.addEventListener('mousedown', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingTime = true;
         document.addEventListener('mousemove', onMouseMoveTime);
         document.addEventListener('mouseup', onMouseUpTime);
         document.addEventListener('selectstart', preventSelection);
         
-        // Start continuous time updates
         timeUpdateInterval = setInterval(() => {
             if (isDraggingTime) {
                 document.querySelector('.time-label').textContent = formatTime(currentTime);
             }
-        }, 16); // approximately 60fps
+        }, 16);
         
         event.preventDefault();
     });
