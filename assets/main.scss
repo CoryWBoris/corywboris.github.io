@@ -1303,3 +1303,16 @@ body {
         }
     }
 }
+
+@media (orientation: landscape) and (max-width: 1023px) {
+    .site-footer.mobile-footer {
+        .social-media-list.horizontal-list {
+            li.email-item {
+                .u-email {
+                    transform: translateY(-2px) !important;  // Raise it up slightly
+                    display: inline-block !important;
+                }
+            }
+        }
+    }
+}
