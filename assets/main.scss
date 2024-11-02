@@ -7,6 +7,64 @@ body {
     user-select: none;
 }
 
+a[href^="mailto:"] {
+    font-weight: bold;
+}
+
+.content a:not(.site-header a):not(.site-footer a) {
+    font-weight: bold;
+    position: relative;
+    text-decoration: none;
+    color: #007bff;
+    -webkit-tap-highlight-color: transparent;
+    transition: color .3s ease;
+
+    // Mobile touch effect
+    &:active,
+    &:focus,
+    &:visited:active,
+    &:visited:focus {
+        color: #1d9f21;
+        outline: none;
+    }
+    
+    // Keep the color after clicking
+    &:visited {
+        color: #1d9f21;
+    }
+}
+
+// Desktop hover effects
+@media (hover: hover) {
+    .content a:not(.site-header a):not(.site-footer a) {
+        &::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 4px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, 
+                #007bff,
+                #00ffd97b,
+                #337fea62,
+                #00ffee   
+            );
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.8;
+        }
+
+        &:hover::after {
+            width: 100%;
+            box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+        }
+        
+        &:hover {
+            color: #0062ff;
+            text-shadow: 0 0 8px rgba(0, 98, 255, 0.4);
+        }
+    }
+}
 // Background styles
 .bg {
     position: relative;
@@ -177,12 +235,12 @@ body {
     position: relative;
     text-align: center;
     min-width: 120px;
-    
-    &:hover { 
-        background-color: #007bf0; 
+
+    &:hover {
+        background-color: #007bf0;
         filter: drop-shadow(0 0 4px rgba(0, 123, 255, 0.95));
     }
-    
+
     &.enabling {
         background-color: #088F8F !important;
         pointer-events: none;
@@ -190,24 +248,24 @@ body {
         text-align: center;
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         animation: glow 1.5s infinite ease-in-out;
-        
+
         // Clear any existing content
         > *:not(.wave-text) {
             display: none;
         }
-        
+
         .wave-text {
             display: inline-flex;
             justify-content: center;
             width: 100%;
             color: white;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-            
+
             span {
                 display: inline-block;
                 animation: wave 1.5s infinite ease-in-out;
                 transform-origin: 50% 100%;
-                
+
                 @for $i from 1 through 14 {
                     &:nth-child(#{$i}) {
                         animation-delay: #{($i - 1) * 0.1}s;
@@ -236,8 +294,8 @@ body {
 #stopButton {
     background-color: #ff0080;
     filter: drop-shadow(0 0 1px rgba(255, 0, 128, 0.4));
-    &:hover { 
-        background-color: #ff0400; 
+    &:hover {
+        background-color: #ff0400;
         filter: drop-shadow(0 0 4px rgba(255, 0, 128, 0.95));
     }
 }
@@ -245,8 +303,8 @@ body {
 #reverseButton {
     background-color: #00d9ff;
     filter: drop-shadow(0 0 1px rgba(0, 217, 255, 0.4));
-    &:hover { 
-        background-color: #00d9ff; 
+    &:hover {
+        background-color: #00d9ff;
         filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.95));
     }
 }
@@ -384,7 +442,7 @@ body {
     }
 
     // Footer styles preserved as is
-    
+
 }
 
 .page-content {
@@ -603,10 +661,10 @@ body {
                 align-items: center;
             }
         }
-    
+
     }
 
-    
+
 }
 
 // // Add this CSS for the reverse button
@@ -676,18 +734,18 @@ body {
 
 /* Separate hover effects for desktop only */
 @media (hover: hover) {
-    #playPauseButton:hover { 
-        background-color: #007bf0; 
+    #playPauseButton:hover {
+        background-color: #007bf0;
         filter: drop-shadow(0 0 4px rgba(0, 123, 255, 0.95));
     }
 
-    #stopButton:hover { 
-        background-color: #ff0400; 
+    #stopButton:hover {
+        background-color: #ff0400;
         filter: drop-shadow(0 0 4px rgba(255, 0, 128, 0.95));
     }
 
-    #reverseButton:hover { 
-        background-color: #00d9ff; 
+    #reverseButton:hover {
+        background-color: #00d9ff;
         filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.95));
     }
 
@@ -715,11 +773,11 @@ body {
 }
 
 @keyframes glow {
-    0%, 100% { 
+    0%, 100% {
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         filter: brightness(1);
     }
-    50% { 
+    50% {
         box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
         filter: brightness(1.2);
     }
@@ -766,7 +824,7 @@ body {
     // Only visual adjustments for landscape
     .car, .red-car, .green-car, .purple-car {
         transform: scale(1.9) !important;
-        
+
         &.reversed {
             transform: scale(1.9) scaleX(-1) !important;
         }
@@ -789,14 +847,14 @@ body {
     #timeSlider {
         -webkit-appearance: none;
         width: 100%;
-        
+
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 76px;
             height: 76px;
             opacity: 0;
         }
-        
+
         &::-moz-range-thumb {
             width: 76px;
             height: 76px;
@@ -828,7 +886,7 @@ body {
     .car, .red-car, .green-car, .purple-car {
         top: -13px;        // Exact same top offset as portrait
         transform: scale(1.9) !important;  // Only scale adjustment for landscape
-        
+
         &.reversed {
             transform: scale(1.9) scaleX(-1) !important;
         }
@@ -958,7 +1016,7 @@ body {
         &:hover {
             .svg-icon {
                 filter: none;
-                
+
                 &:hover {
                     filter: none;
                 }
@@ -1024,7 +1082,7 @@ body {
                 display: flex;
                 align-items: center;
                 transform: translateY(-8px) !important;  // Force move up
-                
+
                 .u-email {
                     margin: 0 !important;
                     padding: 0 10px;
@@ -1049,7 +1107,7 @@ body {
                 display: flex;
                 align-items: center;
                 transform: translateY(-8px) !important;  // Force move up
-                
+
                 .u-email {
                     margin: 0 !important;
                     padding: 0 10px;
@@ -1125,7 +1183,7 @@ body {
     html {
         overflow-x: hidden;
     }
-    
+
     body {
         min-height: 100vh;
         overflow-x: hidden;
@@ -1160,7 +1218,7 @@ body {
     .car, .red-car, .green-car, .purple-car {
         transform: scale(1.9) !important;
         -webkit-transform: scale(1.9) !important;
-        
+
         &.reversed {
             transform: scale(1.9) scaleX(-1) !important;
             -webkit-transform: scale(1.9) scaleX(-1) !important;
@@ -1182,7 +1240,7 @@ body {
     .control-container {
         flex-direction: row;
         padding: 0 20px;
-        
+
         > button {
             flex: 1;
             min-width: 150px;
@@ -1198,7 +1256,7 @@ body {
             flex-direction: column !important;  // Force vertical for PC
             align-items: center !important;
             gap: 5px !important;  // Reduced gap between buttons
-            
+
             button {
                 width: 90% !important;
                 min-width: 90% !important;
@@ -1256,7 +1314,7 @@ body {
         gap: 3px !important;
         padding: 0 !important;
         padding-bottom: 18px !important;
-        
+
         > button {
             margin: 2px 0 !important;  // Tiny margin between buttons
             flex-grow: 0 !important;   // Prevent growing

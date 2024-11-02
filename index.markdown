@@ -10,8 +10,8 @@ permalink: /
 <div class="bg">
     <div class="content">
         <h1>Welcome to my site!</h1>
-        <p>Check out my pride and joy, <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a></p>
-        <p>Enjoy sunsetBoulevard by COBOMOJO below.</p>
+        <p>Check out the one-of-a-kind, <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>!</p>
+        <p>Enjoy <a href="https://cobomojo.bandcamp.com/track/sunsetboulevard">sunsetBoulevard</a> by <a href="https://open.spotify.com/artist/4M0W39F23Xi5aRNFCOj4xE?si=lRPQQpr0RKyWAcsjICrjxQ">COBOMOJO</a> below.</p>
     </div>
     <div class="audio-container">
         <div class="control-container">
