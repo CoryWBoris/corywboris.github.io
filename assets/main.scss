@@ -1167,3 +1167,90 @@ body {
         }
     }
 }
+
+// Base styles - vertical column for all devices
+.control-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+}
+
+// MOBILE LANDSCAPE ONLY - horizontal row
+@media (orientation: landscape) and (max-width: 1023px) {
+    .control-container {
+        flex-direction: row;
+        padding: 0 20px;
+        
+        > button {
+            flex: 1;
+            min-width: 150px;
+        }
+    }
+}
+
+// PC ONLY (regardless of orientation) - wide vertical column
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    html body .page-content .audio-container {
+        .control-container {
+            width: 100% !important;
+            flex-direction: column !important;  // Force vertical for PC
+            align-items: center !important;
+            gap: 5px !important;  // Reduced gap between buttons
+            
+            button {
+                width: 90% !important;
+                min-width: 90% !important;
+                max-width: 90% !important;
+                height: 80px !important;  // Increased button height
+            }
+        }
+    }
+}
+
+// PC ONLY - wide vertical column with adjusted heights and gaps
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    html body .page-content .audio-container .control-container {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 5px !important;  // Reduced gap between buttons
+    }
+
+    html body .page-content .audio-container .control-container #playPauseButton,
+    html body .page-content .audio-container .control-container #stopButton,
+    html body .page-content .audio-container .control-container #reverseButton {
+        width: 90% !important;
+        min-width: 90% !important;
+        max-width: 90% !important;
+        height: 80px !important;  // Increased button height
+    }
+}
+
+// PC ONLY - with multiple height properties
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    #playPauseButton, #stopButton, #reverseButton {
+        height: 65px !important;
+        min-height: 65px !important;
+        max-height: 65px !important;
+        line-height: 65px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+@media (orientation: landscape) {
+    .control-container {
+        padding: 7.5px 20px;
+    }
+}
+
+@media (orientation: portrait) {
+    .control-container {
+        gap: 0px !important;
+    }
+}
