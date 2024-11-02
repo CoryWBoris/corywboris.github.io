@@ -1316,3 +1316,10 @@ body {
         }
     }
 }
+
+// make a pc exclusive adjustment
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .control-container {
+        padding: 18px 20px;
+    }
+}
