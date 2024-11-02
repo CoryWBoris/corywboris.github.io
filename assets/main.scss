@@ -1280,3 +1280,26 @@ body {
         margin-right: 0px !important;
     }
 }
+
+@media (orientation: landscape) and (max-width: 1023px) {
+    .audio-container {
+        .control-container {
+            width: calc(100% - 5px) !important;  // Super minimal side padding
+            margin: 0 auto;
+            padding: 7.5px 5px !important;  // Minimal padding
+        }
+
+        .volume-slider-container,
+        .speed-slider-container,
+        .reverb-slider-container,
+        .time-slider-container {
+            width: calc(100% - 5px) !important;  // Match the new wider width
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .road {
+            width: 100% !important;
+        }
+    }
+}
