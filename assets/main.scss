@@ -1273,3 +1273,10 @@ body {
         height: 35px !important;
     }
 }
+
+@media screen and (max-width: 800px) {
+    .wrapper {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+}
