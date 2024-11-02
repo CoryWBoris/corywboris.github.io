@@ -765,10 +765,10 @@ body {
 @media (orientation: landscape) {
     // Only visual adjustments for landscape
     .car, .red-car, .green-car, .purple-car {
-        transform: scale(1.7) !important;
+        transform: scale(1.9) !important;
         
         &.reversed {
-            transform: scale(1.7) scaleX(-1) !important;
+            transform: scale(1.9) scaleX(-1) !important;
         }
     }
 
@@ -827,10 +827,10 @@ body {
 
     .car, .red-car, .green-car, .purple-car {
         top: -13px;        // Exact same top offset as portrait
-        transform: scale(1.7) !important;  // Only scale adjustment for landscape
+        transform: scale(1.9) !important;  // Only scale adjustment for landscape
         
         &.reversed {
-            transform: scale(1.7) scaleX(-1) !important;
+            transform: scale(1.9) scaleX(-1) !important;
         }
     }
 }
@@ -1158,12 +1158,12 @@ body {
 
     // Keep your existing car styles
     .car, .red-car, .green-car, .purple-car {
-        transform: scale(1.7) !important;
-        -webkit-transform: scale(1.7) !important;
+        transform: scale(1.9) !important;
+        -webkit-transform: scale(1.9) !important;
         
         &.reversed {
-            transform: scale(1.7) scaleX(-1) !important;
-            -webkit-transform: scale(1.7) scaleX(-1) !important;
+            transform: scale(1.9) scaleX(-1) !important;
+            -webkit-transform: scale(1.9) scaleX(-1) !important;
         }
     }
 }
