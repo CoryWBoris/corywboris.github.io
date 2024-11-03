@@ -202,6 +202,13 @@ a[href^="mailto:"] {
     justify-content: center;
     width: 100%;
     gap: 10px;
+    max-width: 100%;
+    
+    > button {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
 // =============================================================================
@@ -580,12 +587,12 @@ a[href^="mailto:"] {
             flex-direction: column !important;
             align-items: center !important;
             gap: 5px !important;
-            padding: 18px 20px;
-
+            padding: 18px 0;
+            
             button {
-                width: 90% !important;
-                min-width: 90% !important;
-                max-width: 90% !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
                 height: 65px !important;
                 min-height: 65px !important;
                 max-height: 65px !important;
