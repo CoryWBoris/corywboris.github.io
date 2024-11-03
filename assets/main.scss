@@ -233,6 +233,7 @@ a[href^="mailto:"] {
     justify-content: center;
     filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.4));
     transition: filter 0.3s ease, background-color 0.3s ease;
+    touch-action: pan-y !important;
 }
 
 // Play/Pause Button
@@ -322,6 +323,7 @@ a[href^="mailto:"] {
     -ms-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y !important;
 
     &::after {
         content: '';
@@ -383,7 +385,7 @@ a[href^="mailto:"] {
     left: 0;
     margin: 0;
     padding: 0;
-    touch-action: none;
+    touch-action: pan-x;
 
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
@@ -477,7 +479,7 @@ a[href^="mailto:"] {
     transform: scale(1.9) !important;
     cursor: pointer;
     z-index: 3;
-    touch-action: none;
+    touch-action: pan-y !important;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
