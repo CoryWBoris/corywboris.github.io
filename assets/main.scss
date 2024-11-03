@@ -2,7 +2,10 @@
 ---
 @import "minima";
 
-// Base styles
+// =============================================================================
+// Base Styles
+// =============================================================================
+
 body {
     user-select: none;
 }
@@ -11,6 +14,7 @@ a[href^="mailto:"] {
     font-weight: bold;
 }
 
+// Link Styles
 .content a:not(.site-header a):not(.site-footer a) {
     font-weight: bold;
     position: relative;
@@ -19,7 +23,6 @@ a[href^="mailto:"] {
     -webkit-tap-highlight-color: transparent;
     transition: color .3s ease;
 
-    // Mobile touch effect
     &:active,
     &:focus,
     &:visited:active,
@@ -28,13 +31,12 @@ a[href^="mailto:"] {
         outline: none;
     }
     
-    // Keep the color after clicking
     &:visited {
         color: #1d9f21;
     }
 }
 
-// Desktop hover effects
+// Desktop Link Hover Effects
 @media (hover: hover) {
     .content a:not(.site-header a):not(.site-footer a) {
         &::after {
@@ -65,7 +67,10 @@ a[href^="mailto:"] {
         }
     }
 }
-// Background styles
+// =============================================================================
+// Background Styles
+// =============================================================================
+
 .bg {
     position: relative;
     z-index: 1;
@@ -95,7 +100,15 @@ a[href^="mailto:"] {
     }
 }
 
-// Media queries for responsive layout
+// =============================================================================
+// Layout & Responsive Core
+// =============================================================================
+
+.page-content {
+    padding: 3px 0 0 0;
+}
+
+// Desktop Layout (601px+)
 @media (min-width: 601px) {
     body {
         background: linear-gradient(
@@ -106,8 +119,16 @@ a[href^="mailto:"] {
         url("/assets/images/CoryPortrait.JPG") center/cover no-repeat;
         transition: background 0.3s ease;
     }
+
+    .content {
+        bottom: 0;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
 }
 
+// Mobile Layout (600px and below)
 @media (max-width: 600px) {
     body {
         display: flex;
@@ -132,68 +153,41 @@ a[href^="mailto:"] {
         flex-shrink: 1;
     }
 
-    .site-footer {
-        margin-top: auto;
-        position: relative;
-        bottom: 50px;
-        background: inherit;
-        background-attachment: fixed;
-        height: 60px;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        overflow: hidden;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .footer-col-wrapper {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 0;
-            flex-direction: column;
-        }
-
-        .footer-col {
-            width: 100%;
-            justify-content: center;
-            margin: 0;
-            padding: 0 15px;
-        }
-
-        .social-media-list,
-        .horizontal-list {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 27px;  // Matching your original spacing
-            margin: 20px 0;
-
-            li {
-                display: flex;
-                align-items: center;
-                margin: 0;
-                padding: 0;
-            }
-        }
-    }
-}
-// Desktop styles
-@media (min-width: 601px) {
     .content {
-        bottom: 0;
-        width: 100%;
-        padding: 20px;
         text-align: center;
     }
 }
 
-// Audio controls
+// Landscape Orientation Base Styles
+@media (orientation: landscape) {
+    html {
+        overflow-x: hidden;
+    }
+
+    body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        width: 100%;
+    }
+}
+
+// General Mobile Adjustments
+@media (max-width: 768px) {
+    .site-nav {
+        z-index: 2;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .wrapper {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+}
+// =============================================================================
+// Audio Controls & Container
+// =============================================================================
+
 .audio-container {
     display: flex;
     flex-direction: column;
@@ -207,9 +201,14 @@ a[href^="mailto:"] {
     flex-direction: column;
     justify-content: center;
     width: 100%;
+    gap: 10px;
 }
 
-// Button styles
+// =============================================================================
+// Button Styles
+// =============================================================================
+
+// Common Button Styles
 #playPauseButton, #stopButton, #reverseButton {
     font-size: 2em;
     padding: 5px 15px;
@@ -229,17 +228,13 @@ a[href^="mailto:"] {
     transition: filter 0.3s ease, background-color 0.3s ease;
 }
 
+// Play/Pause Button
 #playPauseButton {
     background-color: #007bff;
     filter: drop-shadow(0 0 1px rgba(0, 208, 255, 0.4));
     position: relative;
     text-align: center;
     min-width: 120px;
-
-    &:hover {
-        background-color: #007bf0;
-        filter: drop-shadow(0 0 4px rgba(0, 123, 255, 0.95));
-    }
 
     &.enabling {
         background-color: #088F8F !important;
@@ -249,7 +244,6 @@ a[href^="mailto:"] {
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         animation: glow 1.5s infinite ease-in-out;
 
-        // Clear any existing content
         > *:not(.wave-text) {
             display: none;
         }
@@ -276,40 +270,23 @@ a[href^="mailto:"] {
     }
 }
 
-@keyframes swellText {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-}
-
+// Stop Button
 #stopButton {
     background-color: #ff0080;
     filter: drop-shadow(0 0 1px rgba(255, 0, 128, 0.4));
-    &:hover {
-        background-color: #ff0400;
-        filter: drop-shadow(0 0 4px rgba(255, 0, 128, 0.95));
-    }
 }
 
+// Reverse Button
 #reverseButton {
     background-color: #00d9ff;
     filter: drop-shadow(0 0 1px rgba(0, 217, 255, 0.4));
-    &:hover {
-        background-color: #00d9ff;
-        filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.95));
-    }
 }
 
-// Slider containers
+// =============================================================================
+// Slider & Road Styles
+// =============================================================================
+
+// Slider Containers
 .volume-slider-container,
 .speed-slider-container,
 .reverb-slider-container,
@@ -318,7 +295,7 @@ a[href^="mailto:"] {
     width: 100%;
 }
 
-// Road styling
+// Road Styling
 .road {
     position: relative;
     width: 100%;
@@ -350,7 +327,7 @@ a[href^="mailto:"] {
     }
 }
 
-// Slider styles
+// Slider Input Styles
 #volumeSlider,
 #speedSlider,
 #reverbSlider,
@@ -386,7 +363,63 @@ a[href^="mailto:"] {
     }
 }
 
-// Car styles
+// Time Label
+.time-label {
+    position: absolute;
+    top: -6px;
+    left: 40%;
+    transform: translateX(-50%);
+    color: #800080;
+    font-size: 8px;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+// =============================================================================
+// Animations
+// =============================================================================
+
+@keyframes wave {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        filter: brightness(1);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes swellText {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+// =============================================================================
+// Car Styles
+// =============================================================================
+
+// Base Car Styles
 .car, .red-car, .green-car, .purple-car {
     position: absolute;
     top: -13px;
@@ -400,16 +433,15 @@ a[href^="mailto:"] {
     -ms-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-
-    // Base glow state
     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85));
     transition: filter 0.2s ease;
+
+    &.reversed {
+        transform: scale(1.9) scaleX(-1) !important;
+    }
 }
 
-.car.reversed, .red-car.reversed, .green-car.reversed, .purple-car.reversed {
-    transform: scale(1.9) scaleX(-1) !important;
-}
-
+// Car SVG Base Styles
 %car-svg {
     fill-opacity: 1;
     stroke: none;
@@ -427,41 +459,151 @@ a[href^="mailto:"] {
     @extend %car-svg;
 }
 
-// Mobile-specific styles
+// Individual Car Glow Effects
+.car {
+    filter: drop-shadow(0 0 2px rgba(0, 191, 255, 0.85));
+    &:active {
+        filter: drop-shadow(0 0 4px rgba(0, 191, 255, 1));
+    }
+}
+
+.red-car {
+    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.85));
+    &:active {
+        filter: drop-shadow(0 0 4px rgba(255, 0, 0, 1));
+    }
+}
+
+.green-car {
+    filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.85));
+    &:active {
+        filter: drop-shadow(0 0 4px rgba(0, 255, 0, 1));
+    }
+}
+
+.purple-car {
+    filter: drop-shadow(0 0 2px rgba(147, 51, 234, 0.85));
+    &:active {
+        filter: drop-shadow(0 0 4px rgba(147, 51, 234, 1));
+    }
+}
+
+// =============================================================================
+// Responsive Car Behaviors
+// =============================================================================
+
+// Mobile Car Adjustments
 @media (max-width: 768px) {
-    .content {
-        text-align: center;
-    }
-
-    .site-nav {
-        z-index: 2;
-    }
-
     .car, .red-car, .green-car, .purple-car {
         pointer-events: none;
     }
-
-    // Footer styles preserved as is
-
 }
 
-.page-content {
-    padding: 3px 0 0 0;
-}
+// Landscape Orientation Adjustments
+@media (orientation: landscape) {
+    .car, .red-car, .green-car, .purple-car {
+        transform: scale(1.9) !important;
+        -webkit-transform: scale(1.9) !important;
 
-// ------------------------------------------------------------------------------------------- //
-// Footer visibility
-
-
-@media (max-width: 768px) {
-    .site-footer h-card mobile-footer
-    {
-        display: none;
+        &.reversed {
+            transform: scale(1.9) scaleX(-1) !important;
+            -webkit-transform: scale(1.9) scaleX(-1) !important;
+        }
     }
-    .mobile-footer { display: block; }
 }
 
-// List styles for footer
+// =============================================================================
+// Responsive Control Container Layouts
+// =============================================================================
+
+// Portrait Mode Controls
+@media (orientation: portrait) {
+    .control-container {
+        display: flex;
+        flex-direction: column;
+        gap: 3px !important;
+        padding: 0 !important;
+        padding-bottom: 18px !important;
+
+        > button {
+            margin: 2px 0 !important;
+            flex-grow: 0 !important;
+            flex-shrink: 0 !important;
+            height: 60px !important;
+        }
+    }
+
+    .audio-container {
+        padding-bottom: 80px !important;
+    }
+}
+
+// Landscape Mode Controls
+@media (orientation: landscape) and (max-width: 1023px) {
+    .control-container {
+        flex-direction: row;
+        padding: 7.5px 20px;
+
+        > button {
+            flex: 1;
+            min-width: 150px;
+        }
+    }
+
+    .audio-container {
+        .control-container {
+            width: calc(100% - 5px) !important;
+            margin: 0 auto;
+            padding: 7.5px 5px !important;
+        }
+
+        .volume-slider-container,
+        .speed-slider-container,
+        .reverb-slider-container,
+        .time-slider-container {
+            width: calc(100% - 5px) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .road {
+            width: 100% !important;
+        }
+    }
+}
+
+// PC-Only Adjustments
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    html body .page-content .audio-container {
+        .control-container {
+            width: 100% !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 5px !important;
+            padding: 18px 20px;
+
+            button {
+                width: 90% !important;
+                min-width: 90% !important;
+                max-width: 90% !important;
+                height: 65px !important;
+                min-height: 65px !important;
+                max-height: 65px !important;
+                line-height: 65px !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                margin-bottom: 5px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
+    }
+}
+// =============================================================================
+// Footer Base Styles
+// =============================================================================
+
 .horizontal-list, .social-media-list {
     display: flex;
     list-style: none;
@@ -481,50 +623,23 @@ a[href^="mailto:"] {
     }
 
     a {
-        -webkit-tap-highlight-color: transparent;  /* for iOS */
-        -webkit-touch-callout: none;              /* for iOS */
-        -webkit-user-select: none;                /* for iOS */
-        -khtml-user-select: none;                 /* for old browsers */
-        -moz-user-select: none;                   /* for Firefox */
-        -ms-user-select: none;                    /* for IE/Edge */
-        user-select: none;                        /* standard syntax */
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
 }
 
-// Desktop footer styles
-@media (min-width: 601px) {
+// =============================================================================
+// Desktop Footer (601px+)
+// =============================================================================
 
+@media (min-width: 601px) {
     .mobile-footer {
         display: none;
-    }
-    .social-media-list {
-        a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-
-        .svg-icon {
-            width: 50px;
-            height: 50px;
-            transition: filter 0.3s ease, transform 0.3s ease;
-
-            &:hover {
-                transform: scale(1.2);
-            }
-        }
-
-        &:hover {
-            .svg-icon {
-                filter: blur(2px);
-
-                &:hover {
-                    filter: none;
-                }
-            }
-        }
     }
 
     .site-footer {
@@ -560,6 +675,36 @@ a[href^="mailto:"] {
 
         .footer-col-2 {
             padding: 0;
+        }
+    }
+
+    .social-media-list {
+        a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .svg-icon {
+            width: 50px;
+            height: 50px;
+            transition: filter 0.3s ease, transform 0.3s ease;
+
+            &:hover {
+                transform: scale(1.2);
+            }
+        }
+
+        &:hover {
+            .svg-icon {
+                filter: blur(2px);
+
+                &:hover {
+                    filter: none;
+                }
+            }
         }
     }
 
@@ -599,21 +744,21 @@ a[href^="mailto:"] {
     }
 }
 
-// Mobile footer styles
+// =============================================================================
+// Mobile Footer (600px and below)
+// =============================================================================
+
 @media (max-width: 600px) {
+    .site-footer.h-card:not(.mobile-footer) {
+        display: none;
+    }
+
+    .mobile-footer {
+        display: block;
+    }
+
     .site-footer {
         margin-top: auto;
-        position: relative;
-        bottom: 50px;
-        background: inherit;
-        background-attachment: fixed;
-    }
-
-    .site-footer.h-card {
-        padding: 0;
-    }
-
-    .site-footer {
         height: 60px;
         position: fixed;
         bottom: 0;
@@ -624,6 +769,9 @@ a[href^="mailto:"] {
         display: flex;
         align-items: center;
         justify-content: center;
+        background: inherit;
+        background-attachment: fixed;
+        padding: 0;
 
         .footer-content {
             width: 100%;
@@ -655,84 +803,154 @@ a[href^="mailto:"] {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 27px;
+            margin: 20px 0;
 
             li {
                 display: flex;
                 align-items: center;
+                margin: 0;
+                padding: 0;
             }
         }
-
-    }
-
-
-}
-
-// // Add this CSS for the reverse button
-// #reverseButton {
-//     height: 2.5em;  /* Set a fixed height that fits both states */
-//     line-height: 2.5em;  /* Center text vertically */
-//     min-width: 120px;  /* Set a fixed width that fits both words */
-//     overflow: visible;  /* Allow tall characters to overflow */
-//     position: relative;  /* Ensure button stays in place */
-//     padding: 0 15px;  /* Horizontal padding for text */
-//     font-size: 1em;  /* Consistent font size */
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-// }
-
-// Add this with your other car-related styles
-.time-label {
-    position: absolute;
-    top: -6px;
-    left: 40%;
-    transform: translateX(-50%);
-    color: #800080;
-    font-size: 8px;
-    font-weight: bold;
-    white-space: nowrap;
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-/* Add these styles for the glowing car effects */
-.car, .red-car, .green-car, .purple-car {
-    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85));
-    transition: filter 0.3s ease;
-}
-
-/* Custom glow colors for each car */
-.car {
-    filter: drop-shadow(0 0 2px rgba(0, 191, 255, 0.85)); /* Blue glow */
-    &:active {
-        filter: drop-shadow(0 0 4px rgba(0, 191, 255, 1));
     }
 }
 
-.red-car {
-    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.85)); /* Red glow */
-    &:active {
-        filter: drop-shadow(0 0 4px rgba(255, 0, 0, 1));
+// =============================================================================
+// Touch Device Specific Footer Styles
+// =============================================================================
+
+@media (hover: none) and (pointer: coarse) {
+    .site-footer.h-card:not(.mobile-footer) {
+        display: none;
+    }
+
+    .mobile-footer {
+        display: block;
+    }
+
+    .site-footer {
+        height: 60px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: inherit;
+        background-attachment: fixed;
+
+        .footer-col-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .social-media-list,
+        .horizontal-list {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 27px;
+            margin: 0;
+
+            li {
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    }
+}
+// =============================================================================
+// Landscape-Specific Footer Adjustments
+// =============================================================================
+
+@media (orientation: landscape) and (max-width: 1023px) {
+    .site-footer {
+        background: white !important;
+        opacity: 100 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        height: 35px !important;
+    }
+
+    .site-footer.mobile-footer {
+        .social-media-list.horizontal-list {
+            li.email-item {
+                .u-email {
+                    transform: translateY(-2px) !important;
+                    display: inline-block !important;
+                }
+            }
+        }
     }
 }
 
-.green-car {
-    filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.85)); /* Green glow */
-    &:active {
-        filter: drop-shadow(0 0 4px rgba(0, 255, 0, 1));
+@media (orientation: landscape) and (max-width: 900px) {
+    .site-footer.h-card.mobile-footer {
+        // Reset wrapper constraints
+        .wrapper, .footer-col-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        // Reset footer column
+        .footer-col {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .social-media-list.horizontal-list {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            width: 100%;
+            height: 60px;
+            margin: 0;
+            padding: 0 20px;
+
+            li {
+                height: 40px;
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+                flex: 1;
+                justify-content: center;
+
+                a, .u-email {
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .svg-icon {
+                    width: 40px;
+                    height: 40px;
+                    display: block;
+                }
+            }
+        }
     }
 }
 
-.purple-car {
-    filter: drop-shadow(0 0 2px rgba(147, 51, 234, 0.85)); /* Purple glow */
-    &:active {
-        filter: drop-shadow(0 0 4px rgba(147, 51, 234, 1));
-    }
-}
+// =============================================================================
+// Hover Effects & Touch Device Adjustments
+// =============================================================================
 
-/* Separate hover effects for desktop only */
 @media (hover: hover) {
     #playPauseButton:hover {
         background-color: #007bf0;
@@ -766,228 +984,7 @@ a[href^="mailto:"] {
     }
 }
 
-@keyframes wave {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-}
-
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-        filter: brightness(1);
-    }
-    50% {
-        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
-        filter: brightness(1.2);
-    }
-}
-
-/* Disable hover effects on mobile while keeping interactions */
-@media (max-width: 600px) {
-    #playPauseButton:hover,
-    #stopButton:hover,
-    #reverseButton:hover,
-    .social-media-list .svg-icon:hover,
-    .social-media-list:hover .svg-icon,
-    .car:hover,
-    .red-car:hover,
-    .green-car:hover,
-    .purple-car:hover {
-        filter: none;
-        transform: none;
-    }
-
-    /* Preserve original button colors */
-    #playPauseButton:hover { background-color: #007bff; }
-    #stopButton:hover { background-color: #ff0080; }
-    #reverseButton:hover { background-color: #00d9ff; }
-}
-
-@media (max-width: 600px) and (orientation: landscape) {
-    .site-footer {
-        .social-media-list,
-        .horizontal-list {
-            gap: 15px;  // Reduce gap in landscape
-            margin: 10px 0;
-        }
-
-        .svg-icon {
-            width: 40px;  // Make icons smaller
-            height: 40px;
-        }
-    }
-}
-
-// Add this new section for landscape-specific car handling
-@media (orientation: landscape) {
-    // Only visual adjustments for landscape
-    .car, .red-car, .green-car, .purple-car {
-        transform: scale(1.9) !important;
-
-        &.reversed {
-            transform: scale(1.9) scaleX(-1) !important;
-        }
-    }
-
-    // Keep slider containers simple
-    .volume-slider-container,
-    .speed-slider-container,
-    .reverb-slider-container,
-    .time-slider-container {
-        width: 90%;
-        margin: 30px auto;
-        position: relative;
-    }
-
-    // Keep sliders working normally
-    #volumeSlider,
-    #speedSlider,
-    #reverbSlider,
-    #timeSlider {
-        -webkit-appearance: none;
-        width: 100%;
-
-        &::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 76px;
-            height: 76px;
-            opacity: 0;
-        }
-
-        &::-moz-range-thumb {
-            width: 76px;
-            height: 76px;
-            opacity: 0;
-        }
-    }
-
-    // Keep the container width controlled but spacing identical
-    .audio-container {
-        max-width: 90%;
-        margin: 0 auto;
-        padding-bottom: 120px;
-    }
-
-    .road {
-        margin-top: 20px;  // Exact same margin as portrait
-        height: 10px;      // Exact same height
-    }
-
-    .volume-slider-container,
-    .speed-slider-container,
-    .reverb-slider-container,
-    .time-slider-container {
-        width: 90%;        // Adjusted for landscape but keeping proportions
-        margin: 0 auto;    // Center alignment
-        position: relative;
-    }
-
-    .car, .red-car, .green-car, .purple-car {
-        top: -13px;        // Exact same top offset as portrait
-        transform: scale(1.9) !important;  // Only scale adjustment for landscape
-
-        &.reversed {
-            transform: scale(1.9) scaleX(-1) !important;
-        }
-    }
-}
-
-// Add this new section for landscape-specific button handling
-@media (orientation: landscape) {
-    // Container for all buttons
-    .control-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;  // Center the buttons
-        gap: 10px;  // Reduce gap between buttons (from 20px)
-        width: 100%;
-        padding: 0 20px;  // Add some padding on the sides
-    }
-
-    // Make buttons longer
-    .control-container > button {
-        flex: 1;  // Allow buttons to grow
-        min-width: 150px;  // Increase minimum width
-    }
-}
-
-@media (max-width: 600px) {
-    // Hide desktop footer completely
-    .site-footer.h-card:not(.mobile-footer) {
-        display: none;
-    }
-    .mobile-footer {
-        display: block;
-    }
-}
-
-@media (max-width: 600px) and (orientation: landscape) {
-    .mobile-footer {
-        .social-media-list,
-        .horizontal-list {
-            gap: 15px;  // Reduce gap in landscape
-            margin: 10px 0;
-        }
-
-        .svg-icon {
-            width: 40px;  // Make icons smaller
-            height: 40px;
-        }
-    }
-}
-
-// Show mobile footer on touch devices (tablets and phones)
-@media (hover: none) and (pointer: coarse) {
-    .site-footer.h-card:not(.mobile-footer) {
-        display: none;
-    }
-    .mobile-footer {
-        display: block;
-    }
-}
-
-// Additional styling for landscape orientation on touch devices
-@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
-    .mobile-footer {
-        .social-media-list.horizontal-list {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 27px;
-            height: 60px;  // Match footer height
-            margin: 0;
-            padding: 0;
-
-            li {
-                height: 40px;  // Consistent height for all items
-                display: flex;
-                align-items: center;
-                margin: 0;
-                padding: 0;
-
-                // Common styles for both email and SVG containers
-                a, .u-email {
-                    height: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0;
-                    padding: 0;
-                }
-
-                // SVG specific
-                .svg-icon {
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                }
-            }
-        }
-    }
-}
-
-/* Disable hover effects on touch devices */
+// Disable hover effects on touch devices
 @media (hover: none) and (pointer: coarse) {
     #playPauseButton:hover,
     #stopButton:hover,
@@ -1002,12 +999,12 @@ a[href^="mailto:"] {
         transform: none;
     }
 
-    /* Preserve original button colors */
+    // Preserve original button colors
     #playPauseButton:hover { background-color: #007bff; }
     #stopButton:hover { background-color: #ff0080; }
     #reverseButton:hover { background-color: #00d9ff; }
 
-    /* Disable social media icon hover effects */
+    // Disable social media icon hover effects
     .social-media-list {
         .svg-icon:hover {
             transform: none;
@@ -1024,375 +1021,68 @@ a[href^="mailto:"] {
         }
     }
 
-    // Restore padding for main content
+    // Content padding adjustments
     .audio-container {
         max-width: 90%;
         margin: 0 auto;
-        padding-bottom: 100px;  // Padding to prevent content from going under footer
+        padding-bottom: 100px;
     }
+}
 
+// =============================================================================
+// Final Landscape-Specific Adjustments
+// =============================================================================
+
+@media (min-width: 601px) and (orientation: landscape) {
+    .content {
+        padding: 20px 0 !important;
+    }
+    
+    .social-media-list.horizontal-list .svg-icon {
+        padding: 20px;
+    }
+}
+
+@media (orientation: landscape) and (max-width: 600px) {
     .site-footer {
-        height: 60px;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        overflow: hidden;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: inherit;  // Inherit the background from body
-        background-attachment: fixed;  // Keep the background fixed
-
-        .footer-col-wrapper {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 0;
-        }
-
         .social-media-list,
         .horizontal-list {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 27px;
-            margin: 0;
+            gap: 15px;
+            margin: 10px 0;
+        }
 
-            li {
-                display: flex;
-                align-items: center;
-                margin: 0;
-                padding: 0;
-            }
+        .svg-icon {
+            width: 40px;
+            height: 40px;
         }
     }
 }
 
-@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
-    .site-footer.mobile-footer {
-        .social-media-list.horizontal-list {
-            li.email-item {  // More specific selector
-                margin: 0 !important;  // Force override any margins
-                padding: 0 !important;  // Force override any padding
-                height: 40px;
-                display: flex;
-                align-items: center;
-                transform: translateY(-8px) !important;  // Force move up
+// =============================================================================
+// Email Item Specific Adjustments
+// =============================================================================
 
-                .u-email {
-                    margin: 0 !important;
-                    padding: 0 10px;
-                    height: 40px;
-                    line-height: 40px;
-                    display: flex;
-                    align-items: center;
-                }
-            }
-        }
-    }
-}
-
-// First, let's try just orientation
-@media (orientation: landscape) {
-    .site-footer.h-card.mobile-footer {
-        .social-media-list.horizontal-list {
-            li.email-item {  // More specific selector
-                margin: 0 !important;  // Force override any margins
-                padding: 0 !important;  // Force override any padding
-                height: 40px;
-                display: flex;
-                align-items: center;
-                transform: translateY(-8px) !important;  // Force move up
-
-                .u-email {
-                    margin: 0 !important;
-                    padding: 0 10px;
-                    height: 40px;
-                    line-height: 40px;
-                    display: flex;
-                    align-items: center;
-                }
-            }
-        }
-    }
-}
-
-// If that works, we can then try this alternative touch detection
-@media (orientation: landscape) and (max-width: 900px) {
-    .site-footer.h-card.mobile-footer {
-        // Reset any wrapper constraints
-        .wrapper, .footer-col-wrapper {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        // Reset footer column
-        .footer-col {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        .social-media-list.horizontal-list {
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-            width: 100%;
-            height: 60px;
-            margin: 0;
-            padding: 0 20px;
-
-            li {
-                height: 40px;
-                display: flex;
-                align-items: center;
-                margin: 0;
-                padding: 0;
-                flex: 1;  // Allow items to take equal space
-                justify-content: center;  // Center items in their space
-
-                a, .u-email {
-                    height: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0;
-                    padding: 0;
-                }
-
-                .svg-icon {
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                }
-            }
-        }
-    }
-}
-
-// ------------------------------------------------------------------------------------------- //
-// Landscape Orientation Styles
-// ------------------------------------------------------------------------------------------- //
-
-@media (orientation: landscape) {
-    html {
-        overflow-x: hidden;
-    }
-
-    body {
-        min-height: 100vh;
-        overflow-x: hidden;
-        width: 100%;
-    }
-
-    .audio-container {
-        max-width: 90%;
-        margin: 0 auto;
-        padding-bottom: 120px;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-    }
-
-    .control-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        padding: 0 20px;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-
-        > button {
-            flex: 1;
-            min-width: 150px;
-        }
-    }
-
-    // Keep your existing car styles
-    .car, .red-car, .green-car, .purple-car {
-        transform: scale(1.9) !important;
-        -webkit-transform: scale(1.9) !important;
-
-        &.reversed {
-            transform: scale(1.9) scaleX(-1) !important;
-            -webkit-transform: scale(1.9) scaleX(-1) !important;
-        }
-    }
-}
-
-// Base styles - vertical column for all devices
-.control-container {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    gap: 10px;
-}
-
-// MOBILE LANDSCAPE ONLY - horizontal row
-@media (orientation: landscape) and (max-width: 1023px) {
-    .control-container {
-        flex-direction: row;
-        padding: 0 20px;
-
-        > button {
-            flex: 1;
-            min-width: 150px;
-        }
-    }
-}
-
-// PC ONLY (regardless of orientation) - wide vertical column
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-    html body .page-content .audio-container {
-        .control-container {
-            width: 100% !important;
-            flex-direction: column !important;  // Force vertical for PC
-            align-items: center !important;
-            gap: 5px !important;  // Reduced gap between buttons
-
-            button {
-                width: 90% !important;
-                min-width: 90% !important;
-                max-width: 90% !important;
-                height: 80px !important;  // Increased button height
-            }
-        }
-    }
-}
-
-// PC ONLY - wide vertical column with adjusted heights and gaps
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-    html body .page-content .audio-container .control-container {
-        width: 100% !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 5px !important;  // Reduced gap between buttons
-    }
-
-    html body .page-content .audio-container .control-container #playPauseButton,
-    html body .page-content .audio-container .control-container #stopButton,
-    html body .page-content .audio-container .control-container #reverseButton {
-        width: 90% !important;
-        min-width: 90% !important;
-        max-width: 90% !important;
-        height: 80px !important;  // Increased button height
-    }
-}
-
-// PC ONLY - with multiple height properties
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-    #playPauseButton, #stopButton, #reverseButton {
-        height: 65px !important;
-        min-height: 65px !important;
-        max-height: 65px !important;
-        line-height: 65px !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        margin-bottom: 5px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-}
-@media (orientation: landscape) {
-    .control-container {
-        padding: 7.5px 20px;
-    }
-}
-
-@media (orientation: portrait) {
-    .control-container {
-        display: flex;
-        flex-direction: column;
-        gap: 3px !important;
-        padding: 0 !important;
-        padding-bottom: 18px !important;
-
-        > button {
-            margin: 2px 0 !important;  // Tiny margin between buttons
-            flex-grow: 0 !important;   // Prevent growing
-            flex-shrink: 0 !important; // Prevent shrinking
-            height: 60px !important;   // Fixed height
-        }
-    }
-
-    .audio-container {
-        padding-bottom: 80px !important; // Adjust bottom padding if needed
-    }
-}
-@media (min-width: 601px) and (orientation: landscape) {
-.content {
-    padding: 20px 0 !important;
-}
-.social-media-list.horizontal-list .svg-icon {
-    padding: 20px;
-
-}
-}
-
-@media (max-width: 1023px) and (orientation: landscape) {
-    .site-footer {
-        background: white !important;
-        opacity: 100 !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        height: 35px !important;
-    }
-}
-
-@media screen and (max-width: 800px) {
-    .wrapper {
-        margin-left: 0px !important;
-        margin-right: 0px !important;
-    }
-}
-
-@media (orientation: landscape) and (max-width: 1023px) {
-    .audio-container {
-        .control-container {
-            width: calc(100% - 5px) !important;  // Super minimal side padding
-            margin: 0 auto;
-            padding: 7.5px 5px !important;  // Minimal padding
-        }
-
-        .volume-slider-container,
-        .speed-slider-container,
-        .reverb-slider-container,
-        .time-slider-container {
-            width: calc(100% - 5px) !important;  // Match the new wider width
-            margin-left: auto !important;
-            margin-right: auto !important;
-        }
-
-        .road {
-            width: 100% !important;
-        }
-    }
-}
-
-@media (orientation: landscape) and (max-width: 1023px) {
+@media (hover: none) and (pointer: coarse) and (orientation: landscape),
+       (orientation: landscape) {
     .site-footer.mobile-footer {
         .social-media-list.horizontal-list {
             li.email-item {
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                transform: translateY(-8px) !important;
+
                 .u-email {
-                    transform: translateY(-2px) !important;  // Raise it up slightly
-                    display: inline-block !important;
+                    margin: 0 !important;
+                    padding: 0 10px;
+                    height: 40px;
+                    line-height: 40px;
+                    display: flex;
+                    align-items: center;
                 }
             }
         }
-    }
-}
-
-// make a pc exclusive adjustment
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-    .control-container {
-        padding: 18px 20px;
     }
 }
