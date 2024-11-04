@@ -470,7 +470,7 @@ a[href^="mailto:"] {
     position: absolute;
     top: -18px;
     left: 50%;
-    transform: scale(3.5) !important;
+    transform: scale(3) !important;
     cursor: pointer;
     z-index: 4;
     touch-action: pan-y !important;
@@ -484,7 +484,7 @@ a[href^="mailto:"] {
     transition: filter 0.2s ease;
 
     &.reversed {
-        transform: scale(3.5) scaleX(-1) !important;
+        transform: scale(3) scaleX(-1) !important;
     }
 }
 // Keep purple car styles unchanged since it's already handled
@@ -550,12 +550,12 @@ a[href^="mailto:"] {
 // Landscape Orientation Adjustments
 @media (orientation: landscape) {
     .car, .red-car, .green-car, .purple-car {
-        transform: scale(3.5) !important;
-        -webkit-transform: scale(3.5) !important;
+        transform: scale(3) !important;
+        -webkit-transform: scale(3) !important;
 
         &.reversed {
-            transform: scale(3.5) scaleX(-1) !important;
-            -webkit-transform: scale(3.5) scaleX(-1) !important;
+            transform: scale(3) scaleX(-1) !important;
+            -webkit-transform: scale(3) scaleX(-1) !important;
         }
     }
 }
