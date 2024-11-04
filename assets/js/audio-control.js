@@ -692,10 +692,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         value = Math.max(min, Math.min(max, value));
         
         // Adjust the available travel distance by subtracting the car width
-        const adjustedWidth = sliderWidth - 1.5*carWidth;
+        const adjustedWidth = sliderWidth - 2.75*carWidth;
     
         // Calculate position as a percentage of the adjusted width
-        const carPosition = Math.round(((value - min) / (max - min)) * adjustedWidth + carWidth/3.8);
+        const carPosition = Math.round(((value - min) / (max - min)) * adjustedWidth + carWidth/1.1);
     
         carElement.style.left = `${carPosition}px`;
     }
