@@ -514,20 +514,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('selectstart', preventSelection);
     });
     purpleCar.addEventListener('mousedown', function(event) {
-        if (!audioUnlocked) {
-            event.preventDefault();
-            return;
-        }
         isDraggingTime = true;
         document.addEventListener('mousemove', onMouseMoveTime);
         document.addEventListener('mouseup', onMouseUpTime);
         document.addEventListener('selectstart', preventSelection);
         
+        // Start continuous time updates
         timeUpdateInterval = setInterval(() => {
             if (isDraggingTime) {
                 document.querySelector('.time-label').textContent = formatTime(currentTime);
             }
-        }, 16);
+        }, 16); // approximately 60fps
         
         event.preventDefault();
     });
@@ -1093,6 +1090,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Add this to your existing JS
     // Add these alongside your existing event listeners
     car.addEventListener('touchstart', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingVolume = true;
         document.addEventListener('touchmove', handleTouchMoveVolume, { passive: false });
         document.addEventListener('touchend', handleTouchEndVolume);
@@ -1101,6 +1102,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     redCar.addEventListener('touchstart', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingSpeed = true;
         document.addEventListener('touchmove', handleTouchMoveSpeed, { passive: false });
         document.addEventListener('touchend', handleTouchEndSpeed);
@@ -1109,6 +1114,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     greenCar.addEventListener('touchstart', function(event) {
+        if (!audioUnlocked) {
+            event.preventDefault();
+            return;
+        }
         isDraggingReverb = true;
         document.addEventListener('touchmove', handleTouchMoveReverb, { passive: false });
         document.addEventListener('touchend', handleTouchEndReverb);
