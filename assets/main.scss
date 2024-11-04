@@ -629,7 +629,7 @@ a[href^="mailto:"] {
             flex-direction: column !important;
             align-items: center !important;
             gap: 5px !important;
-            padding: 18px 0;
+            // padding: 10px 0;
             
             button {
                 width: 100% !important;
@@ -647,6 +647,9 @@ a[href^="mailto:"] {
                 justify-content: center !important;
             }
         }
+    }
+    html body .control-container {
+        padding: 0 0 50px 0;
     }
 }
 // =============================================================================
