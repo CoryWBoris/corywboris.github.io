@@ -946,7 +946,7 @@ a[href^="mailto:"] {
     }
 }
 
-@media (orientation: landscape) and (max-width: 900px) {
+@media (orientation: landscape) and (max-width: 1023px) {
     .site-footer.h-card.mobile-footer {
         // Reset wrapper constraints
         .wrapper, .footer-col-wrapper {
@@ -1095,7 +1095,7 @@ a[href^="mailto:"] {
     }
 }
 
-@media (orientation: landscape) and (max-width: 600px) {
+@media (orientation: landscape) and (max-width: 1032px) {
     .site-footer {
         .social-media-list,
         .horizontal-list {
