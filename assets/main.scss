@@ -385,7 +385,7 @@ a[href^="mailto:"] {
     left: 0;
     margin: 0;
     padding: 0;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
 
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
@@ -394,7 +394,7 @@ a[href^="mailto:"] {
         background: transparent;
         cursor: pointer;
         opacity: 0;
-        touch-action: none;
+        touch-action: pan-x;
     }
 
     &::-moz-range-thumb {
@@ -403,7 +403,7 @@ a[href^="mailto:"] {
         background: transparent;
         cursor: pointer;
         opacity: 0;
-        touch-action: none;
+        touch-action: pan-x;
     }
 
     -webkit-tap-highlight-color: transparent;
