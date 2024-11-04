@@ -612,20 +612,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         const percentage = newLeft / (sliderRect.width - carRect.width);
         const newTime = percentage * duration;
         
-        // Update times
+        // Only update visual elements while dragging
         currentTime = newTime;
         timeSlider.value = newTime;
         updateCarPosition(newTime, purpleCar, timeRange.min, timeRange.max);
-        
-        // Update time label continuously
         document.querySelector('.time-label').textContent = formatTime(newTime);
-        
-        // Stop audio completely during scrubbing
-        if (source) {
-            source.stop();
-            source.disconnect();
-            source = null;
-        }
     }
 
     function onMouseUpVolume() {
@@ -652,32 +643,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     function onMouseUpTime() {
         if (!isDraggingTime) return;
         
-        // Immediately clear flags and intervals
         isDraggingTime = false;
+        
+        // Remove event listeners
+        document.removeEventListener('mousemove', onMouseMoveTime);
+        document.removeEventListener('mouseup', onMouseUpTime);
+        document.removeEventListener('selectstart', preventSelection);
+        
         if (timeUpdateInterval) {
             clearInterval(timeUpdateInterval);
             timeUpdateInterval = null;
         }
         
-        // Immediately remove event listeners
-        document.removeEventListener('mousemove', onMouseMoveTime);
-        document.removeEventListener('mouseup', onMouseUpTime);
-        document.removeEventListener('selectstart', preventSelection);
-        
-        // Only handle audio if we were playing
+        // Only update audio position when mouse is released
         if (isPlaying) {
-            lastFrameTime = audioCtx.currentTime;
             startTime = audioCtx.currentTime - currentTime;
+            lastFrameTime = audioCtx.currentTime;
             
-            // Create and start new source in one go
-            source = audioCtx.createBufferSource();
-            source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
-            source.playbackRate.value = speedSlider.value / 100;
-            source.connect(dryGain);
-            source.connect(convolver);
-            
-            const startPosition = isReversed ? duration - currentTime : currentTime;
-            source.start(0, startPosition);
+            // Update the source to the new position
+            if (source) {
+                source.stop();
+                source = audioCtx.createBufferSource();
+                source.buffer = isReversed ? reverseBuffer(buffer) : buffer;
+                source.playbackRate.value = speedSlider.value / 100;
+                source.connect(dryGain);
+                source.connect(convolver);
+                
+                const startPosition = isReversed ? duration - currentTime : currentTime;
+                source.start(0, startPosition);
+            }
             
             requestAnimationFrame(updateTimeDisplay);
         }
