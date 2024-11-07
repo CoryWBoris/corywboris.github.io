@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             return false;
         }
     }
-
+// --------------------Slider Blockers-------------------- //
     // Add blockers to sliders
     volumeSlider.addEventListener('mousedown', handleSliderInteraction, true);
     volumeSlider.addEventListener('touchstart', handleSliderInteraction, true);
@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         return false;
     });
-
+// --------------------Slider Inputs-------------------- //
     volumeSlider.addEventListener('input', function() {
         updateCarPosition(volumeSlider.value, car, volumeRange.min, volumeRange.max);
         if (gainNode) {
@@ -480,6 +480,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             requestAnimationFrame(updateTimeDisplay);
         }
     });
+// --------------------Slider Mouse Interactions-------------------- //
 
     car.addEventListener('mousedown', function(event) {
         if (!audioUnlocked) {
@@ -529,6 +530,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         event.preventDefault();
     });
     
+// --------------------Slider Click Blockers-------------------- //
     // Prevent slider click from moving the car
     volumeSlider.addEventListener('mousedown', function(event) {
         if (event.target !== car) {
@@ -552,6 +554,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             event.preventDefault();
         }
     });
+// --------------------Slider Mouse Movements-------------------- //
 
     function onMouseMoveVolume(event) {
         if (!isDraggingVolume) return;
@@ -619,6 +622,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.querySelector('.time-label').textContent = formatTime(newTime);
     }
 
+// --------------------Slider Mouse Up-------------------- //
     function onMouseUpVolume() {
         isDraggingVolume = false;
         document.removeEventListener('mousemove', onMouseMoveVolume);
@@ -677,6 +681,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
+// --------------------Slider Car Position-------------------- //
     function updateCarPosition(value, carElement, min, max) {
         const slider = carElement.parentElement.querySelector('input[type="range"]');
         const sliderWidth = slider.offsetWidth;
@@ -698,7 +703,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         event.preventDefault();
     }
 
-    // Initialize car positions
+// --------------------Slider Initialization-------------------- //
     updateCarPosition(initialVolume, car, volumeRange.min, volumeRange.max);
     updateCarPosition(initialSpeed, redCar, speedRange.min, speedRange.max);
     updateCarPosition(initialReverb, greenCar, reverbRange.min, reverbRange.max);
@@ -707,6 +712,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     playPauseButton.style.touchAction = 'none';
     stopButton.style.touchAction = 'none';
 
+// --------------------Slider Touch Interactions-------------------- //
     function handleTouchMoveVolume(event) {
         if (!isDraggingVolume) return;
         event.preventDefault();
@@ -808,6 +814,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
+// --------------------Slider Touch Up-------------------- //
+    function handleTouchEndVolume() {
+        isDraggingVolume = false;
+        document.removeEventListener('touchmove', handleTouchMoveVolume);
+        document.removeEventListener('touchend', handleTouchEndVolume);
+        document.removeEventListener('touchcancel', handleTouchEndVolume);
+    }
+
+    function handleTouchEndSpeed() {
+        isDraggingSpeed = false;
+        document.removeEventListener('touchmove', handleTouchMoveSpeed);
+        document.removeEventListener('touchend', handleTouchEndSpeed);
+        document.removeEventListener('touchcancel', handleTouchEndSpeed);
+    }
+
+    function handleTouchEndReverb() {
+        isDraggingReverb = false;
+        document.removeEventListener('touchmove', handleTouchMoveReverb);
+        document.removeEventListener('touchend', handleTouchEndReverb);
+        document.removeEventListener('touchcancel', handleTouchEndReverb);
+    }
+
     function handleTouchEndTime() {
         if (!isDraggingTime) return;
         
@@ -841,22 +869,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Keep only this touchstart listener
-    purpleCar.addEventListener('touchstart', function(event) {
-        isDraggingTime = true;
-        document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
-        document.addEventListener('touchend', handleTouchEndTime);
-        document.addEventListener('touchcancel', handleTouchEndTime);
-        
-        // Add continuous time updates like in mousedown
-        timeUpdateInterval = setInterval(() => {
-            if (isDraggingTime) {
-                document.querySelector('.time-label').textContent = formatTime(currentTime);
-            }
-        }, 16); // approximately 60fps
-        
-        event.preventDefault();
-    });
+
 
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
@@ -1073,16 +1086,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    purpleCar.addEventListener('touchstart', function(event) {
-        isDraggingTime = true;
-        document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
-        document.addEventListener('touchend', handleTouchEndTime);
-        document.addEventListener('touchcancel', handleTouchEndTime);
-        event.preventDefault();
-    });
-
-    // Add this to your existing JS
-    // Add these alongside your existing event listeners
+// --------------------Slider Touch Start-------------------- //
     car.addEventListener('touchstart', function(event) {
         if (!audioUnlocked) {
             event.preventDefault();
@@ -1119,26 +1123,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         event.preventDefault();
     });
 
-    function handleTouchEndVolume() {
-        isDraggingVolume = false;
-        document.removeEventListener('touchmove', handleTouchMoveVolume);
-        document.removeEventListener('touchend', handleTouchEndVolume);
-        document.removeEventListener('touchcancel', handleTouchEndVolume);
-    }
+    // Keep only this touchstart listener
+    purpleCar.addEventListener('touchstart', function(event) {
+        isDraggingTime = true;
+        document.addEventListener('touchmove', handleTouchMoveTime, { passive: false });
+        document.addEventListener('touchend', handleTouchEndTime);
+        document.addEventListener('touchcancel', handleTouchEndTime);
+        
+        // Add continuous time updates like in mousedown
+        timeUpdateInterval = setInterval(() => {
+            if (isDraggingTime) {
+                document.querySelector('.time-label').textContent = formatTime(currentTime);
+            }
+        }, 16); // approximately 60fps
+        
+        event.preventDefault();
+    });
 
-    function handleTouchEndSpeed() {
-        isDraggingSpeed = false;
-        document.removeEventListener('touchmove', handleTouchMoveSpeed);
-        document.removeEventListener('touchend', handleTouchEndSpeed);
-        document.removeEventListener('touchcancel', handleTouchEndSpeed);
-    }
 
-    function handleTouchEndReverb() {
-        isDraggingReverb = false;
-        document.removeEventListener('touchmove', handleTouchMoveReverb);
-        document.removeEventListener('touchend', handleTouchEndReverb);
-        document.removeEventListener('touchcancel', handleTouchEndReverb);
-    }
 
     // Add this function to handle orientation/resize changes
     function reinitializeCarPositions() {
