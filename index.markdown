@@ -11,7 +11,7 @@ permalink: /
     <div class="content">
         <h1>Welcome to my site!</h1>
         <p>Check out <a href="https://coryboris.gumroad.com/l/TrueAutoColor">TrueAutoColor</a>, for Ableton Live</p>
-        <p>Enjoy <a href="https://cobomojo.bandcamp.com/track/sunsetboulevard">sunsetBoulevard</a> by <a href="https://open.spotify.com/artist/4M0W39F23Xi5aRNFCOj4xE?si=lRPQQpr0RKyWAcsjICrjxQ">COBOMOJO</a> below</p>
+        <p>Enjoy PoplarNebula by <a href="https://open.spotify.com/artist/4M0W39F23Xi5aRNFCOj4xE?si=lRPQQpr0RKyWAcsjICrjxQ">COBOMOJO</a> below</p>
     </div>
     <div class="audio-container">
         <div class="control-container">
